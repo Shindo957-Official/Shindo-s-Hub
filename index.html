@@ -48,6 +48,44 @@
             </div>
             <div class="settings-body">
                 <div class="settings-group">
+                    <h3><i class="fas fa-user"></i> Account</h3>
+                    <div id="accountLoggedOut">
+                        <div class="account-tabs">
+                            <button class="account-tab active" onclick="showAccountTab('login')">Login</button>
+                            <button class="account-tab" onclick="showAccountTab('register')">Register</button>
+                        </div>
+                        <div id="loginForm" class="account-form">
+                            <input type="text" id="loginUsername" placeholder="Username" class="account-input">
+                            <input type="password" id="loginPassword" placeholder="Password" class="account-input">
+                            <button class="settings-action-btn" onclick="loginAccount()">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </div>
+                        <div id="registerForm" class="account-form" style="display:none;">
+                            <input type="text" id="registerUsername" placeholder="Username" class="account-input">
+                            <input type="password" id="registerPassword" placeholder="Password" class="account-input">
+                            <input type="password" id="registerConfirm" placeholder="Confirm Password" class="account-input">
+                            <button class="settings-action-btn" onclick="registerAccount()">
+                                <i class="fas fa-user-plus"></i> Create Account
+                            </button>
+                        </div>
+                        <div id="accountError" class="account-error"></div>
+                    </div>
+                    <div id="accountLoggedIn" style="display:none;">
+                        <div class="account-info">
+                            <div class="account-avatar"><i class="fas fa-user-circle"></i></div>
+                            <div class="account-details">
+                                <span class="account-username" id="displayUsername"></span>
+                                <span class="account-badge" id="accountBadge"></span>
+                            </div>
+                        </div>
+                        <button class="settings-action-btn logout-btn" onclick="logoutAccount()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
                     <h3><i class="fas fa-shield-alt"></i> Tab Cloaking</h3>
                     <button class="settings-action-btn" onclick="openAboutBlank()">
                         <i class="fas fa-external-link-alt"></i> Open in about:blank

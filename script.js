@@ -22,7 +22,12 @@ const gamesData = [
     { id: '2048', name: '2048', image: 'images/2048.png', description: 'Addictive number puzzle', tags: ['Puzzle', 'Casual'] },
     { id: 'sonic-r', name: 'Sonic R', image: 'images/sonic-r.jpg', description: 'Race for the goal with Sonic', tags: ['Racing', 'Sonic'] },
     { id: 'sonic-colors', name: 'Sonic Colors', image: 'images/sonic-colors.webp', description: 'Colorful Sonic adventure', tags: ['Platformer', 'Sonic'] },
-    { id: 'sonic-classic-collection', name: 'Sonic Classic Collection', image: 'images/sonic-classic-collection.jpg', description: '4 classic Sonic games in one', tags: ['Platformer', 'Sonic'] }
+    { id: 'sonic-classic-collection', name: 'Sonic Classic Collection', image: 'images/sonic-classic-collection.jpg', description: '4 classic Sonic games in one', tags: ['Platformer', 'Sonic'] },
+    { id: 'fnf-luis', name: 'FNF vs Luis', image: 'images/fnf-luis.jpg', description: 'Rhythm battle vs Luis', tags: ['Rhythm', 'Music'] },
+    { id: 'celeste-2', name: 'Celeste 2', image: 'images/celeste-2.png', description: 'Challenging precision platformer', tags: ['Platformer', 'Indie'] },
+    { id: 'cookie-clicker', name: 'Cookie Clicker', image: 'images/cookie-clicker.webp', description: 'Click cookies, build an empire', tags: ['Idle', 'Clicker'] },
+    { id: 'geometry-dash-lite', name: 'Geometry Dash Lite', image: 'images/geometry-dash-lite.webp', description: 'Jump and fly through danger', tags: ['Rhythm', 'Arcade'] },
+    { id: 'fnf-rewrite', name: 'FNF vs Rewrite', image: 'images/fnf-sonic-exe.jpg', description: 'Rhythm battle vs Rewrite', tags: ['Rhythm', 'Music'] }
 ];
 
 const RECENTLY_PLAYED_KEY = 'shindohub_recently_played';
@@ -456,6 +461,7 @@ function applyStoredSettings() {
 document.addEventListener('DOMContentLoaded', () => {
     init();
     applyStoredSettings();
+    updateAccountUI();
     
     document.getElementById('settingsModal').addEventListener('click', (e) => {
         if (e.target.id === 'settingsModal') {
@@ -476,3 +482,165 @@ window.toggleFPS = toggleFPS;
 window.toggleWebGL = toggleWebGL;
 window.toggleMobileUI = toggleMobileUI;
 window.setVolume = setVolume;
+
+const ACCOUNTS_KEY = 'shindohub_accounts';
+const CURRENT_USER_KEY = 'shindohub_current_user';
+const ADMIN_USER = 'Shindo957';
+const ADMIN_HASH = 'a1b2c3d4e5f6';
+
+function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString(16);
+}
+
+function getAccounts() {
+    try {
+        return JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveAccounts(accounts) {
+    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
+function getCurrentUser() {
+    return localStorage.getItem(CURRENT_USER_KEY) || null;
+}
+
+function setCurrentUser(username) {
+    if (username) {
+        localStorage.setItem(CURRENT_USER_KEY, username);
+    } else {
+        localStorage.removeItem(CURRENT_USER_KEY);
+    }
+}
+
+function showAccountTab(tab) {
+    document.querySelectorAll('.account-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.account-tab[onclick*="${tab}"]`).classList.add('active');
+    document.getElementById('loginForm').style.display = tab === 'login' ? 'flex' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? 'flex' : 'none';
+    document.getElementById('accountError').textContent = '';
+}
+
+function loginAccount() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('accountError');
+    
+    if (!username || !password) {
+        errorEl.textContent = 'Please fill in all fields';
+        return;
+    }
+    
+    if (username === ADMIN_USER && password === 'LinuxmasterSonicR') {
+        setCurrentUser(ADMIN_USER);
+        updateAccountUI();
+        errorEl.textContent = '';
+        return;
+    }
+    
+    const accounts = getAccounts();
+    if (!accounts[username]) {
+        errorEl.textContent = 'Account not found';
+        return;
+    }
+    
+    if (accounts[username].hash !== simpleHash(password)) {
+        errorEl.textContent = 'Incorrect password';
+        return;
+    }
+    
+    setCurrentUser(username);
+    updateAccountUI();
+    errorEl.textContent = '';
+}
+
+function registerAccount() {
+    const username = document.getElementById('registerUsername').value.trim();
+    const password = document.getElementById('registerPassword').value;
+    const confirm = document.getElementById('registerConfirm').value;
+    const errorEl = document.getElementById('accountError');
+    
+    if (!username || !password || !confirm) {
+        errorEl.textContent = 'Please fill in all fields';
+        return;
+    }
+    
+    if (username.length < 3) {
+        errorEl.textContent = 'Username must be at least 3 characters';
+        return;
+    }
+    
+    if (password.length < 4) {
+        errorEl.textContent = 'Password must be at least 4 characters';
+        return;
+    }
+    
+    if (password !== confirm) {
+        errorEl.textContent = 'Passwords do not match';
+        return;
+    }
+    
+    if (username.toLowerCase() === ADMIN_USER.toLowerCase()) {
+        errorEl.textContent = 'This username is reserved';
+        return;
+    }
+    
+    const accounts = getAccounts();
+    if (accounts[username]) {
+        errorEl.textContent = 'Username already taken';
+        return;
+    }
+    
+    accounts[username] = { hash: simpleHash(password), created: Date.now() };
+    saveAccounts(accounts);
+    setCurrentUser(username);
+    updateAccountUI();
+    errorEl.textContent = '';
+}
+
+function logoutAccount() {
+    setCurrentUser(null);
+    updateAccountUI();
+}
+
+function updateAccountUI() {
+    const user = getCurrentUser();
+    const loggedOut = document.getElementById('accountLoggedOut');
+    const loggedIn = document.getElementById('accountLoggedIn');
+    
+    if (user) {
+        loggedOut.style.display = 'none';
+        loggedIn.style.display = 'block';
+        document.getElementById('displayUsername').textContent = user;
+        const badge = document.getElementById('accountBadge');
+        if (user === ADMIN_USER) {
+            badge.textContent = 'Admin';
+            badge.className = 'account-badge admin';
+        } else {
+            badge.textContent = 'Member';
+            badge.className = 'account-badge member';
+        }
+    } else {
+        loggedOut.style.display = 'block';
+        loggedIn.style.display = 'none';
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('registerUsername').value = '';
+        document.getElementById('registerPassword').value = '';
+        document.getElementById('registerConfirm').value = '';
+    }
+}
+
+window.showAccountTab = showAccountTab;
+window.loginAccount = loginAccount;
+window.registerAccount = registerAccount;
+window.logoutAccount = logoutAccount;

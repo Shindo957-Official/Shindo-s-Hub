@@ -889,6 +889,124 @@ footer p {
     border: none;
 }
 
+.account-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.account-tab {
+    flex: 1;
+    padding: 10px;
+    background: var(--bg-card);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.account-tab:hover {
+    color: #fff;
+}
+
+.account-tab.active {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.account-input {
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.account-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.account-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.account-error {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 8px;
+    min-height: 18px;
+}
+
+.account-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.account-avatar {
+    font-size: 40px;
+    color: var(--accent);
+}
+
+.account-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.account-username {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.account-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.account-badge.admin {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #000;
+}
+
+.account-badge.member {
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--accent);
+}
+
+.logout-btn {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+}
+
 .toggle-switch {
     position: relative;
     width: 52px;
