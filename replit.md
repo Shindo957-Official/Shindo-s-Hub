@@ -58,7 +58,29 @@ A modern game portal website that hosts browser-based games. Features a sleek da
 ## Deployment
 Configured as autoscale deployment running `node server.js`.
 
+## Experimental Channel Features
+When users switch to the Experimental channel in Settings, they unlock:
+- **Random Game Button**: "I'm Feeling Lucky" picks a random game
+- **Category Filter**: Filter games by category (Racing, Puzzle, Platformer, etc.)
+- **Game Timer**: Tracks playtime per game, displayed during play and in profile
+- **Badge System**: 6 Regular badges, Ultimate badge (1+ hour on all games), Grand Champion (admin-awarded)
+- **User Profiles**: View badges, stats, avatar, and playtime
+- **Game Comments**: Users can leave comments on games (local storage)
+- **Feedback System**: Send feedback/bug reports via Discord webhook with rate limiting
+- **macOS Theme**: Additional UI theme option (1.0 Exp) with macOS-style aesthetic
+
 ## Recent Changes
+- January 17, 2026: Experimental channel features
+  - Added channel switcher (Stable/Experimental) in settings
+  - Random game button and category filter for experimental users
+  - Game timer system tracking playtime per game
+  - Badge/achievement system with 6 Regular + Ultimate + Grand Champion badges
+  - Profile modal showing badges, stats, playtime
+  - Game comments system (local storage)
+  - Feedback system with Discord webhook integration
+  - macOS-style experimental UI theme
+  - Server-side feedback endpoint with rate limiting and input sanitization
+
 - January 17, 2026: Size optimization
   - Migrated 8 games to GitHub Pages CDN (bob-the-robber-2, drive-mad, retro-bowl, slope, vex3-6)
   - CDN URL: https://shindo957-official.github.io/ShindoHub/games/

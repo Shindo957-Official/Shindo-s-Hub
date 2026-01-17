@@ -108,6 +108,14 @@
                             </div>
                             <div id="adminUserList" class="admin-user-list" style="display:none;"></div>
                         </div>
+                        <div class="experimental-account-btns" id="experimentalAccountBtns" style="display:none;">
+                            <button class="settings-action-btn" onclick="openProfileModal()">
+                                <i class="fas fa-user"></i> My Profile
+                            </button>
+                            <button class="settings-action-btn" onclick="openBadgesModal()">
+                                <i class="fas fa-trophy"></i> My Badges
+                            </button>
+                        </div>
                         <button class="settings-action-btn logout-btn" onclick="logoutAccount()">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </button>
@@ -174,6 +182,42 @@
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3><i class="fas fa-flask"></i> Release Channel</h3>
+                    <div class="channel-selector">
+                        <button class="channel-btn" id="stableChannelBtn" onclick="setReleaseChannel('stable')">
+                            <i class="fas fa-shield-alt"></i> Stable
+                        </button>
+                        <button class="channel-btn" id="experimentalChannelBtn" onclick="setReleaseChannel('experimental')">
+                            <i class="fas fa-flask"></i> Experimental
+                        </button>
+                    </div>
+                    <p class="channel-warning" id="channelWarning" style="display:none;">
+                        <i class="fas fa-exclamation-triangle"></i> Experimental features may have bugs
+                    </p>
+                </div>
+
+                <div class="settings-group experimental-only" id="experimentalSettings" style="display:none;">
+                    <h3><i class="fas fa-star"></i> Experimental Features</h3>
+                    <div class="exp-feature-list">
+                        <div class="exp-feature"><i class="fas fa-dice"></i> Random Game Button</div>
+                        <div class="exp-feature"><i class="fas fa-filter"></i> Category Filter</div>
+                        <div class="exp-feature"><i class="fas fa-clock"></i> Game Timer</div>
+                        <div class="exp-feature"><i class="fas fa-trophy"></i> Badges & Achievements</div>
+                        <div class="exp-feature"><i class="fas fa-user"></i> Player Profiles</div>
+                        <div class="exp-feature"><i class="fas fa-comment"></i> Game Comments</div>
+                        <div class="exp-feature"><i class="fas fa-desktop"></i> macOS UI Theme</div>
+                    </div>
+                </div>
+
+                <div class="settings-group experimental-only" id="feedbackSection" style="display:none;">
+                    <h3><i class="fas fa-envelope"></i> Send Feedback</h3>
+                    <textarea id="feedbackText" class="feedback-textarea" placeholder="Share your thoughts, report bugs, or suggest features..."></textarea>
+                    <button class="settings-action-btn" onclick="sendFeedback()">
+                        <i class="fas fa-paper-plane"></i> Send Feedback
+                    </button>
                 </div>
 
                 <div class="settings-group">
@@ -274,6 +318,11 @@
         </div>
         <iframe id="gameFrame" src="" allow="fullscreen; autoplay; gamepad"></iframe>
         <div class="game-modal-footer">
+            <div class="game-timer-section experimental-feature" id="gameTimerSection" style="display:none;">
+                <i class="fas fa-clock"></i>
+                <span>Playtime: </span>
+                <span id="gameTimerDisplay">0s</span>
+            </div>
             <div class="game-rating">
                 <span>Rate this game:</span>
                 <div class="star-rating" id="starRating">
@@ -284,6 +333,14 @@
                     <i class="fas fa-star" data-rating="5"></i>
                 </div>
                 <span class="avg-rating" id="avgRating"></span>
+            </div>
+        </div>
+        <div class="game-comments-section experimental-feature" id="gameCommentsSection" style="display:none;">
+            <h4><i class="fas fa-comments"></i> Comments</h4>
+            <div id="gameComments" class="comments-list"></div>
+            <div class="comment-form">
+                <input type="text" id="commentInput" placeholder="Add a comment..." maxlength="200">
+                <button onclick="submitComment()"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
@@ -309,6 +366,14 @@
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="searchInput" placeholder="Search games...">
             </div>
+            <div class="experimental-controls" id="experimentalControls" style="display:none;">
+                <button class="random-game-btn" onclick="openRandomGame()">
+                    <i class="fas fa-dice"></i> I'm Feeling Lucky
+                </button>
+                <select id="categoryFilter" class="category-filter" onchange="setCategoryFilter(this.value)">
+                    <option value="all">All Categories</option>
+                </select>
+            </div>
         </div>
 
         <div class="no-results" id="noResults" style="display: none;">
@@ -323,6 +388,34 @@
     <footer>
         <p>Shindo's Hub - Play Free Browser Games | <a href="/about.html" style="color: var(--accent); text-decoration: none;">About & Credits</a></p>
     </footer>
+
+    <div class="badges-modal" id="badgesModal">
+        <div class="badges-content">
+            <div class="badges-header">
+                <h2><i class="fas fa-trophy"></i> My Badges</h2>
+                <button class="badges-close" onclick="closeBadgesModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="badges-body">
+                <div class="badges-grid" id="badgesGrid"></div>
+                <div class="badges-progress" id="badgesProgress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-content">
+            <div class="profile-header">
+                <h2><i class="fas fa-user"></i> Player Profile</h2>
+                <button class="profile-close" onclick="closeProfileModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="profile-body">
+                <div class="profile-avatar-large" id="profileAvatar"></div>
+                <h3 id="profileUsername"></h3>
+                <div class="profile-stats" id="profileStats"></div>
+                <div class="profile-badges" id="profileBadges"></div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

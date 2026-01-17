@@ -38,6 +38,251 @@ const TOP_PLAYED_COUNT = 6;
 const APP_VERSION = '1.00';
 const APP_CHANNEL = 'Stable';
 const UPDATE_LOG_KEY = 'shindohub_update_log_seen';
+const CHANNEL_KEY = 'shindohub_release_channel';
+const GAME_TIMERS_KEY = 'shindohub_game_timers';
+const BADGES_KEY = 'shindohub_badges';
+const COMMENTS_KEY = 'shindohub_comments';
+const CATEGORY_FILTER_KEY = 'shindohub_category_filter';
+
+function getReleaseChannel() {
+    return localStorage.getItem(CHANNEL_KEY) || 'stable';
+}
+
+function setReleaseChannel(channel) {
+    localStorage.setItem(CHANNEL_KEY, channel);
+    location.reload();
+}
+
+function isExperimental() {
+    return getReleaseChannel() === 'experimental';
+}
+
+function getGameTimers() {
+    try {
+        return JSON.parse(localStorage.getItem(GAME_TIMERS_KEY) || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveGameTimers(timers) {
+    localStorage.setItem(GAME_TIMERS_KEY, JSON.stringify(timers));
+}
+
+function getBadges() {
+    try {
+        return JSON.parse(localStorage.getItem(BADGES_KEY) || '{"earned":[],"grandChampion":false}');
+    } catch (e) {
+        return { earned: [], grandChampion: false };
+    }
+}
+
+function saveBadges(badges) {
+    localStorage.setItem(BADGES_KEY, JSON.stringify(badges));
+}
+
+function getComments() {
+    try {
+        return JSON.parse(localStorage.getItem(COMMENTS_KEY) || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveComments(comments) {
+    localStorage.setItem(COMMENTS_KEY, JSON.stringify(comments));
+}
+
+let gameTimerInterval = null;
+let gameStartTime = null;
+
+function startGameTimer(gameId) {
+    if (!isExperimental()) return;
+    gameStartTime = Date.now();
+    gameTimerInterval = setInterval(() => updateGameTimerDisplay(gameId), 1000);
+}
+
+function stopGameTimer(gameId) {
+    if (!isExperimental() || !gameStartTime) return;
+    clearInterval(gameTimerInterval);
+    const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+    const timers = getGameTimers();
+    timers[gameId] = (timers[gameId] || 0) + elapsed;
+    saveGameTimers(timers);
+    gameStartTime = null;
+    checkBadgeProgress();
+}
+
+function updateGameTimerDisplay(gameId) {
+    const timerEl = document.getElementById('gameTimerDisplay');
+    if (!timerEl || !gameStartTime) return;
+    const timers = getGameTimers();
+    const total = (timers[gameId] || 0) + Math.floor((Date.now() - gameStartTime) / 1000);
+    timerEl.textContent = formatTime(total);
+}
+
+function formatTime(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) return `${h}h ${m}m ${s}s`;
+    if (m > 0) return `${m}m ${s}s`;
+    return `${s}s`;
+}
+
+function getTotalPlaytime(gameId) {
+    const timers = getGameTimers();
+    return timers[gameId] || 0;
+}
+
+function checkBadgeProgress() {
+    if (!isExperimental()) return;
+    const timers = getGameTimers();
+    const badges = getBadges();
+    
+    const REGULAR_BADGES = [
+        { id: 'first_play', name: 'First Steps', desc: 'Play your first game', icon: 'fa-play', check: () => Object.keys(timers).length >= 1 },
+        { id: 'explorer', name: 'Explorer', desc: 'Play 5 different games', icon: 'fa-compass', check: () => Object.keys(timers).length >= 5 },
+        { id: 'adventurer', name: 'Adventurer', desc: 'Play 10 different games', icon: 'fa-hiking', check: () => Object.keys(timers).length >= 10 },
+        { id: 'dedicated', name: 'Dedicated', desc: 'Play any game for 30 minutes', icon: 'fa-clock', check: () => Object.values(timers).some(t => t >= 1800) },
+        { id: 'marathon', name: 'Marathon Runner', desc: 'Play any game for 2 hours', icon: 'fa-running', check: () => Object.values(timers).some(t => t >= 7200) },
+        { id: 'completionist', name: 'Completionist', desc: 'Play all games at least once', icon: 'fa-check-double', check: () => Object.keys(timers).length >= gamesData.length }
+    ];
+    
+    REGULAR_BADGES.forEach(badge => {
+        if (!badges.earned.includes(badge.id) && badge.check()) {
+            badges.earned.push(badge.id);
+            showBadgeNotification(badge);
+        }
+    });
+    
+    const allGamesOneHour = gamesData.every(game => (timers[game.id] || 0) >= 3600);
+    if (allGamesOneHour && !badges.earned.includes('ultimate')) {
+        badges.earned.push('ultimate');
+        showBadgeNotification({ id: 'ultimate', name: 'Ultimate Gamer', desc: 'Played every game for 1+ hour', icon: 'fa-crown' });
+    }
+    
+    saveBadges(badges);
+}
+
+function showBadgeNotification(badge) {
+    const notification = document.createElement('div');
+    notification.className = 'badge-notification';
+    notification.innerHTML = `
+        <i class="fas ${badge.icon}"></i>
+        <div>
+            <strong>Badge Earned!</strong>
+            <span>${badge.name}</span>
+        </div>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+function openRandomGame() {
+    const filteredGames = getFilteredGames();
+    if (filteredGames.length === 0) return;
+    const randomGame = filteredGames[Math.floor(Math.random() * filteredGames.length)];
+    openGame(randomGame.id, randomGame.name);
+}
+
+function getFilteredGames() {
+    const categoryFilter = localStorage.getItem(CATEGORY_FILTER_KEY) || 'all';
+    if (categoryFilter === 'all') return gamesData;
+    return gamesData.filter(game => game.tags.some(tag => tag.toLowerCase() === categoryFilter.toLowerCase()));
+}
+
+function getAllCategories() {
+    const categories = new Set();
+    gamesData.forEach(game => game.tags.forEach(tag => categories.add(tag)));
+    return Array.from(categories).sort();
+}
+
+function setCategoryFilter(category) {
+    localStorage.setItem(CATEGORY_FILTER_KEY, category);
+    init();
+}
+
+function awardGrandChampion(username) {
+    const currentUser = getCurrentUser();
+    if (!currentUser || currentUser.username !== 'Shindo957') {
+        alert('Only admins can award the Grand Champion badge!');
+        return;
+    }
+    const accounts = getAccounts();
+    if (accounts[username]) {
+        accounts[username].grandChampion = true;
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+        alert(`Grand Champion badge awarded to ${username}!`);
+    }
+}
+
+async function submitFeedback(message, type = 'feedback') {
+    if (!message.trim()) return;
+    const username = getCurrentUser();
+    try {
+        const response = await fetch('/api/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: message.trim(),
+                type,
+                username: username || 'Anonymous',
+                timestamp: new Date().toISOString()
+            })
+        });
+        if (response.ok) {
+            alert('Feedback sent! Thank you.');
+            return true;
+        }
+    } catch (e) {
+        console.error('Feedback error:', e);
+    }
+    alert('Failed to send feedback. Please try again.');
+    return false;
+}
+
+function addComment(gameId, text) {
+    if (!text.trim()) return;
+    const username = getCurrentUser();
+    if (!username) {
+        alert('Please log in to comment');
+        return;
+    }
+    const accounts = getAccounts();
+    const user = accounts[username] || {};
+    const comments = getComments();
+    if (!comments[gameId]) comments[gameId] = [];
+    comments[gameId].push({
+        username: username,
+        text: text.trim(),
+        timestamp: Date.now(),
+        avatar: user.avatar
+    });
+    saveComments(comments);
+    renderComments(gameId);
+}
+
+function renderComments(gameId) {
+    const container = document.getElementById('gameComments');
+    if (!container) return;
+    const comments = getComments()[gameId] || [];
+    container.innerHTML = comments.length === 0 
+        ? '<p class="no-comments">No comments yet. Be the first!</p>'
+        : comments.slice(-10).map(c => `
+            <div class="comment">
+                <div class="comment-header">
+                    <strong>${c.username}</strong>
+                    <span>${new Date(c.timestamp).toLocaleDateString()}</span>
+                </div>
+                <p>${c.text}</p>
+            </div>
+        `).join('');
+}
 
 function checkUpdateLog() {
     const seenVersion = localStorage.getItem(UPDATE_LOG_KEY);
@@ -619,13 +864,33 @@ function openGame(gameId, gameName) {
     stars.forEach(star => {
         star.onclick = () => rateGame(gameId, parseInt(star.dataset.rating));
     });
+    
+    if (isExperimental()) {
+        document.getElementById('gameTimerSection').style.display = 'flex';
+        document.getElementById('gameCommentsSection').style.display = 'block';
+        const timerDisplay = document.getElementById('gameTimerDisplay');
+        timerDisplay.textContent = formatTime(getTotalPlaytime(gameId));
+        startGameTimer(gameId);
+        renderComments(gameId);
+    }
 }
 
 function closeGameModal() {
     const modal = document.getElementById('gameModal');
     const frame = document.getElementById('gameFrame');
+    
+    if (currentGameId) {
+        stopGameTimer(currentGameId);
+    }
+    
     modal.classList.remove('active');
     frame.src = '';
+    
+    if (isExperimental()) {
+        document.getElementById('gameTimerSection').style.display = 'none';
+        document.getElementById('gameCommentsSection').style.display = 'none';
+    }
+    
     currentGameId = null;
     
     if (document.fullscreenElement) {
@@ -717,7 +982,174 @@ function applyUIVersion(version) {
         document.body.classList.add('ui-05');
     } else if (version === '0.75') {
         document.body.classList.add('ui-075');
+    } else if (version === 'macos') {
+        document.body.classList.add('ui-macos');
     }
+}
+
+function initExperimental() {
+    const channel = getReleaseChannel();
+    const isExp = channel === 'experimental';
+    
+    const stableBtn = document.getElementById('stableChannelBtn');
+    const expBtn = document.getElementById('experimentalChannelBtn');
+    const channelWarning = document.getElementById('channelWarning');
+    const expSettings = document.getElementById('experimentalSettings');
+    const feedbackSection = document.getElementById('feedbackSection');
+    const expControls = document.getElementById('experimentalControls');
+    const appChannel = document.getElementById('appChannel');
+    
+    if (stableBtn) stableBtn.classList.toggle('active', !isExp);
+    if (expBtn) expBtn.classList.toggle('active', isExp);
+    if (channelWarning) channelWarning.style.display = isExp ? 'block' : 'none';
+    if (expSettings) expSettings.style.display = isExp ? 'block' : 'none';
+    if (feedbackSection) feedbackSection.style.display = isExp ? 'block' : 'none';
+    if (expControls) expControls.style.display = isExp ? 'flex' : 'none';
+    
+    if (appChannel) {
+        appChannel.textContent = isExp ? 'Experimental' : 'Stable';
+        appChannel.className = 'version-badge ' + (isExp ? 'unstable' : 'stable');
+    }
+    
+    const expAccountBtns = document.getElementById('experimentalAccountBtns');
+    if (expAccountBtns) expAccountBtns.style.display = isExp ? 'flex' : 'none';
+    
+    if (isExp) {
+        initCategoryFilter();
+        const uiSelector = document.querySelector('.ui-version-selector');
+        if (uiSelector && !document.querySelector('[data-version="macos"]')) {
+            const macBtn = document.createElement('button');
+            macBtn.className = 'ui-version-btn';
+            macBtn.dataset.version = 'macos';
+            macBtn.textContent = '1.0 Exp';
+            macBtn.onclick = () => setUIVersion('macos');
+            uiSelector.appendChild(macBtn);
+        }
+    }
+}
+
+function initCategoryFilter() {
+    const select = document.getElementById('categoryFilter');
+    if (!select) return;
+    
+    const categories = getAllCategories();
+    const current = localStorage.getItem(CATEGORY_FILTER_KEY) || 'all';
+    
+    select.innerHTML = '<option value="all">All Categories</option>' +
+        categories.map(cat => `<option value="${cat}" ${cat === current ? 'selected' : ''}>${cat}</option>`).join('');
+}
+
+function submitComment() {
+    const input = document.getElementById('commentInput');
+    if (!input || !currentGameId) return;
+    addComment(currentGameId, input.value);
+    input.value = '';
+}
+
+async function sendFeedback() {
+    const textarea = document.getElementById('feedbackText');
+    if (!textarea) return;
+    const success = await submitFeedback(textarea.value, 'feedback');
+    if (success) textarea.value = '';
+}
+
+function openBadgesModal() {
+    const modal = document.getElementById('badgesModal');
+    const grid = document.getElementById('badgesGrid');
+    const progress = document.getElementById('badgesProgress');
+    
+    if (!modal || !grid) return;
+    
+    const badges = getBadges();
+    const timers = getGameTimers();
+    
+    const ALL_BADGES = [
+        { id: 'first_play', name: 'First Steps', desc: 'Play your first game', icon: 'fa-play' },
+        { id: 'explorer', name: 'Explorer', desc: 'Play 5 different games', icon: 'fa-compass' },
+        { id: 'adventurer', name: 'Adventurer', desc: 'Play 10 different games', icon: 'fa-hiking' },
+        { id: 'dedicated', name: 'Dedicated', desc: 'Play any game for 30 min', icon: 'fa-clock' },
+        { id: 'marathon', name: 'Marathon Runner', desc: 'Play any game for 2 hours', icon: 'fa-running' },
+        { id: 'completionist', name: 'Completionist', desc: 'Play all games once', icon: 'fa-check-double' },
+        { id: 'ultimate', name: 'Ultimate Gamer', desc: '1+ hour on every game', icon: 'fa-crown' },
+        { id: 'grandChampion', name: 'Grand Champion', desc: 'Defeat every game (admin only)', icon: 'fa-gem' }
+    ];
+    
+    grid.innerHTML = ALL_BADGES.map(b => {
+        const earned = badges.earned.includes(b.id) || (b.id === 'grandChampion' && badges.grandChampion);
+        return `<div class="badge-item ${earned ? 'earned' : 'locked'}">
+            <i class="fas ${b.icon}"></i>
+            <div class="name">${b.name}</div>
+            <div class="desc">${b.desc}</div>
+        </div>`;
+    }).join('');
+    
+    const totalPlaytime = Object.values(timers).reduce((a, b) => a + b, 0);
+    const gamesPlayed = Object.keys(timers).length;
+    
+    progress.innerHTML = `
+        <div class="profile-stats">
+            <div class="profile-stat"><div class="value">${badges.earned.length}</div><div class="label">Badges</div></div>
+            <div class="profile-stat"><div class="value">${gamesPlayed}</div><div class="label">Games</div></div>
+            <div class="profile-stat"><div class="value">${formatTime(totalPlaytime)}</div><div class="label">Total Time</div></div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+}
+
+function closeBadgesModal() {
+    document.getElementById('badgesModal')?.classList.remove('active');
+}
+
+function openProfileModal(username) {
+    const modal = document.getElementById('profileModal');
+    const avatar = document.getElementById('profileAvatar');
+    const usernameEl = document.getElementById('profileUsername');
+    const stats = document.getElementById('profileStats');
+    const badgesEl = document.getElementById('profileBadges');
+    
+    if (!modal) return;
+    
+    const currentUser = getCurrentUser();
+    const targetUser = username || currentUser;
+    if (!targetUser) return;
+    
+    const accounts = getAccounts();
+    const user = accounts[targetUser];
+    const timers = getGameTimers();
+    const badges = getBadges();
+    
+    if (user?.avatar) {
+        avatar.innerHTML = `<img src="${user.avatar}" alt="${targetUser}">`;
+    } else {
+        avatar.innerHTML = '<i class="fas fa-user-circle"></i>';
+    }
+    
+    usernameEl.textContent = targetUser;
+    
+    const totalPlaytime = Object.values(timers).reduce((a, b) => a + b, 0);
+    const gamesPlayed = Object.keys(timers).length;
+    
+    stats.innerHTML = `
+        <div class="profile-stat"><div class="value">${gamesPlayed}</div><div class="label">Games Played</div></div>
+        <div class="profile-stat"><div class="value">${formatTime(totalPlaytime)}</div><div class="label">Playtime</div></div>
+        <div class="profile-stat"><div class="value">${badges.earned.length}</div><div class="label">Badges</div></div>
+    `;
+    
+    badgesEl.innerHTML = badges.earned.map(id => {
+        const icons = { first_play: 'fa-play', explorer: 'fa-compass', adventurer: 'fa-hiking', dedicated: 'fa-clock', marathon: 'fa-running', completionist: 'fa-check-double', ultimate: 'fa-crown', grandChampion: 'fa-gem' };
+        return `<div class="profile-badge"><i class="fas ${icons[id] || 'fa-star'}"></i> ${id.replace(/_/g, ' ')}</div>`;
+    }).join('');
+    
+    if (user?.grandChampion) {
+        badgesEl.innerHTML += '<div class="profile-badge" style="background: rgba(168, 85, 247, 0.3); color: #a855f7;"><i class="fas fa-gem"></i> Grand Champion</div>';
+    }
+    
+    modal.classList.add('active');
+}
+
+function closeProfileModal() {
+    document.getElementById('profileModal')?.classList.remove('active');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -726,6 +1158,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyStoredSettings();
     updateAccountUI();
     checkUpdateLog();
+    initExperimental();
     
     const settings = getSettings();
     applyUIVersion(settings.uiVersion || '0.75');
@@ -773,6 +1206,15 @@ window.setVolume = setVolume;
 window.showUpdateLog = showUpdateLog;
 window.closeUpdateLog = closeUpdateLog;
 window.toggleDontShowAgain = toggleDontShowAgain;
+window.setReleaseChannel = setReleaseChannel;
+window.openRandomGame = openRandomGame;
+window.setCategoryFilter = setCategoryFilter;
+window.submitComment = submitComment;
+window.sendFeedback = sendFeedback;
+window.openBadgesModal = openBadgesModal;
+window.closeBadgesModal = closeBadgesModal;
+window.openProfileModal = openProfileModal;
+window.closeProfileModal = closeProfileModal;
 
 const ACCOUNTS_KEY = 'shindohub_accounts';
 const CURRENT_USER_KEY = 'shindohub_current_user';
