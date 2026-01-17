@@ -19,7 +19,10 @@ const gamesData = [
     { id: 'vex4', name: 'VEX 4', image: 'images/vex4.jpg', description: 'More challenging obstacles', tags: ['Platformer', 'Action'] },
     { id: 'vex5', name: 'VEX 5', image: 'images/vex5.jpg', description: 'Ultimate platform challenge', tags: ['Platformer', 'Action'] },
     { id: '1v1lol', name: '1v1.LOL', image: 'images/1v1lol.jpg', description: 'Build and shoot battle royale', tags: ['Shooter', 'Battle Royale'] },
-    { id: '2048', name: '2048', image: 'images/2048.png', description: 'Addictive number puzzle', tags: ['Puzzle', 'Casual'] }
+    { id: '2048', name: '2048', image: 'images/2048.png', description: 'Addictive number puzzle', tags: ['Puzzle', 'Casual'] },
+    { id: 'sonic-r', name: 'Sonic R', image: 'images/sonic-r.jpg', description: 'Race for the goal with Sonic', tags: ['Racing', 'Sonic'] },
+    { id: 'sonic-colors', name: 'Sonic Colors', image: 'images/sonic-colors.webp', description: 'Colorful Sonic adventure', tags: ['Platformer', 'Sonic'] },
+    { id: 'sonic-classic-collection', name: 'Sonic Classic Collection', image: 'images/sonic-classic-collection.jpg', description: '4 classic Sonic games in one', tags: ['Platformer', 'Sonic'] }
 ];
 
 const RECENTLY_PLAYED_KEY = 'shindohub_recently_played';
