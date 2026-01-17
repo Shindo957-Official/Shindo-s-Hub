@@ -261,8 +261,199 @@ function init() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+const SETTINGS_KEY = 'shindohub_settings';
+
+function getSettings() {
+    try {
+        const stored = localStorage.getItem(SETTINGS_KEY);
+        return stored ? JSON.parse(stored) : {
+            uiVersion: '0.5',
+            musicEnabled: false,
+            fpsEnabled: false,
+            webglEnabled: true,
+            mobileUIEnabled: false
+        };
+    } catch (e) {
+        return {
+            uiVersion: '0.5',
+            musicEnabled: false,
+            fpsEnabled: false,
+            webglEnabled: true,
+            mobileUIEnabled: false
+        };
+    }
+}
+
+function saveSettings(settings) {
+    try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch (e) {
+        console.warn('Could not save settings');
+    }
+}
+
+function openSettings() {
+    document.getElementById('settingsModal').classList.add('active');
+    loadSettingsState();
+}
+
+function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('active');
+}
+
+function loadSettingsState() {
+    const settings = getSettings();
+    
+    document.getElementById('musicToggle').checked = settings.musicEnabled;
+    document.getElementById('fpsToggle').checked = settings.fpsEnabled;
+    document.getElementById('webglToggle').checked = settings.webglEnabled;
+    document.getElementById('mobileUIToggle').checked = settings.mobileUIEnabled;
+    
+    document.querySelectorAll('.ui-version-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.version === settings.uiVersion);
+    });
+}
+
+function openAboutBlank() {
+    const win = window.open();
+    if (win) {
+        win.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Google</title>
+                <link rel="icon" href="https://www.google.com/favicon.ico">
+            </head>
+            <body style="margin:0;overflow:hidden;">
+                <iframe src="${window.location.href}" style="width:100vw;height:100vh;border:none;"></iframe>
+            </body>
+            </html>
+        `);
+        win.document.close();
+    }
+    closeSettings();
+}
+
+function setUIVersion(version) {
+    const settings = getSettings();
+    settings.uiVersion = version;
+    saveSettings(settings);
+    
+    document.querySelectorAll('.ui-version-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.version === version);
+    });
+}
+
+function toggleMusic() {
+    const settings = getSettings();
+    const audio = document.getElementById('menuMusic');
+    settings.musicEnabled = document.getElementById('musicToggle').checked;
+    saveSettings(settings);
+    
+    if (settings.musicEnabled) {
+        audio.play().catch(() => {
+            console.log('Audio autoplay blocked');
+        });
+    } else {
+        audio.pause();
+    }
+}
+
+let fpsFrameId = null;
+let lastTime = performance.now();
+let frameCount = 0;
+
+function updateFPS() {
+    const now = performance.now();
+    frameCount++;
+    
+    if (now - lastTime >= 1000) {
+        const fps = Math.round(frameCount * 1000 / (now - lastTime));
+        document.getElementById('fpsValue').textContent = fps;
+        frameCount = 0;
+        lastTime = now;
+    }
+    
+    fpsFrameId = requestAnimationFrame(updateFPS);
+}
+
+function toggleFPS() {
+    const settings = getSettings();
+    const fpsCounter = document.getElementById('fpsCounter');
+    settings.fpsEnabled = document.getElementById('fpsToggle').checked;
+    saveSettings(settings);
+    
+    if (settings.fpsEnabled) {
+        fpsCounter.style.display = 'block';
+        lastTime = performance.now();
+        frameCount = 0;
+        updateFPS();
+    } else {
+        fpsCounter.style.display = 'none';
+        if (fpsFrameId) {
+            cancelAnimationFrame(fpsFrameId);
+            fpsFrameId = null;
+        }
+    }
+}
+
+function toggleWebGL() {
+    const settings = getSettings();
+    settings.webglEnabled = document.getElementById('webglToggle').checked;
+    saveSettings(settings);
+}
+
+function toggleMobileUI() {
+    const settings = getSettings();
+    settings.mobileUIEnabled = document.getElementById('mobileUIToggle').checked;
+    saveSettings(settings);
+    
+    if (settings.mobileUIEnabled) {
+        document.body.classList.add('force-mobile-ui');
+    } else {
+        document.body.classList.remove('force-mobile-ui');
+    }
+}
+
+function applyStoredSettings() {
+    const settings = getSettings();
+    
+    if (settings.fpsEnabled) {
+        document.getElementById('fpsCounter').style.display = 'block';
+        lastTime = performance.now();
+        frameCount = 0;
+        updateFPS();
+    }
+    
+    if (settings.mobileUIEnabled) {
+        document.body.classList.add('force-mobile-ui');
+    }
+    
+    if (settings.musicEnabled) {
+        const audio = document.getElementById('menuMusic');
+        audio.play().catch(() => {});
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    applyStoredSettings();
+    
+    document.getElementById('settingsModal').addEventListener('click', (e) => {
+        if (e.target.id === 'settingsModal') {
+            closeSettings();
+        }
+    });
+});
 
 window.trackGame = trackGame;
 window.searchGames = searchGames;
 window.closeMobileMenu = closeMobileMenu;
+window.openSettings = openSettings;
+window.closeSettings = closeSettings;
+window.openAboutBlank = openAboutBlank;
+window.setUIVersion = setUIVersion;
+window.toggleMusic = toggleMusic;
+window.toggleFPS = toggleFPS;
+window.toggleWebGL = toggleWebGL;
+window.toggleMobileUI = toggleMobileUI;

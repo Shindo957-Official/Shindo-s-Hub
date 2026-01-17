@@ -5,19 +5,22 @@ A modern game portal website that hosts browser-based games. Features a sleek da
 
 ## Features
 - **Top Played**: Tracks actual play counts per game using localStorage, displays top 6 most played with rank badges
-- **Game Library**: 21+ browser-based games including Cuphead, VEX series, Minecraft, racing, puzzle, and rhythm games
+- **Game Library**: 24+ browser-based games including Cuphead, VEX series, Minecraft, Sonic games, racing, puzzle, and rhythm games
 - **Search**: Real-time search filtering by game name, description, or tags
 - **Recently Played**: Tracks last 8 games played using localStorage
 - **Mobile-Friendly**: Responsive design with touch-friendly UI and hamburger menu
 - **Game Descriptions**: Each game includes title, description, and category tags
+- **Settings Panel**: About:blank cloaking, UI version switcher, menu music toggle, FPS counter, WebGL switch, mobile UI toggle
 
 ## Project Structure
 ```
 /
 ├── index.html              # Main homepage
 ├── main.css                # Modern responsive styles
-├── script.js               # Search, play tracking, mobile detection
+├── script.js               # Search, play tracking, settings, mobile detection
 ├── server.js               # Express server on port 5000
+├── about.html              # About & Credits page
+├── audio/                  # Audio files (menu music)
 ├── images/                 # Game thumbnails and logo
 └── games/                  # Game files (HTML5 games)
     ├── cuphead/
@@ -36,7 +39,10 @@ A modern game portal website that hosts browser-based games. Features a sleek da
     ├── minecraft-1-12-2/
     ├── minecraft-1-21-4/
     ├── 1v1lol/
-    └── 2048/
+    ├── 2048/
+    ├── sonic-r/
+    ├── sonic-colors/
+    └── sonic-classic-collection/
 ```
 
 ## Running the Project
