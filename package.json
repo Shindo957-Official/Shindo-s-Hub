@@ -1,8 +1,9 @@
 {
-  "name": "workspace",
+  "name": "shindos-hub",
   "version": "1.0.0",
-  "description": "*Subscribe to Blazer!!!* https://youtube.com/c/blazerhm",
-  "main": "script.js",
+  "type": "module",
+  "description": "Shindo's Hub - Game Portal",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,8 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mercuryworkshop/bare-mux": "^2.1.8",
+    "@mercuryworkshop/epoxy-transport": "^3.0.1",
+    "@titaniumnetwork-dev/ultraviolet": "^3.2.10",
     "express": "^5.2.1",
     "http-proxy-middleware": "^3.0.5",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "wisp-server-node": "^1.1.8"
   }
 }
