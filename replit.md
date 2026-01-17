@@ -36,11 +36,12 @@ A static HTML/CSS/JavaScript game portal website that hosts various browser game
 ```
 
 ## Running the Project
-- Development: Uses `http-server` to serve static files on port 5000
-- Command: `npx http-server -p 5000 -a 0.0.0.0 -c-1`
+- Development: Uses Express server with proxy support on port 5000
+- Command: `node server.js`
+- Proxy: Routes `/proxy/` to Invidious for YouTube access
 
 ## Deployment
-Configured as a static site deployment serving the root directory.
+Configured as autoscale deployment running `node server.js`.
 
 ## Recent Changes
 - January 17, 2026: Major feature update
