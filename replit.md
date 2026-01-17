@@ -1,4 +1,4 @@
-# Blazer - Game Portal
+# Shindo's Hub - Game Portal
 
 ## Overview
 A static HTML/CSS/JavaScript game portal website that hosts various browser games. The site features a modern, dark-themed interface with a "Popular" games section, searchable game library, recently played tracking, and mobile-friendly responsive design.
