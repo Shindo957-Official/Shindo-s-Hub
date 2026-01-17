@@ -30,15 +30,10 @@ A modern game portal website that hosts browser-based games. Features a sleek da
 ├── about.html              # About & Credits page
 ├── audio/                  # Audio files (menu music)
 ├── images/                 # Game thumbnails and logo
-└── games/                  # Game files (HTML5 games)
+└── games/                  # Local game files (CDN games hosted on GitHub Pages)
     ├── cuphead/
-    ├── bob-the-robber-2/
-    ├── vex3/ - vex7/
-    ├── drive-mad/
     ├── moto-x3m/
     ├── motox3m2/
-    ├── retro-bowl/
-    ├── slope/
     ├── tomb-of-the-mask/
     ├── space-waves/
     ├── fnf-sonic-exe/
@@ -48,9 +43,11 @@ A modern game portal website that hosts browser-based games. Features a sleek da
     ├── minecraft-1-21-4/
     ├── 1v1lol/
     ├── 2048/
+    ├── vex7/
     ├── sonic-r/
     ├── sonic-colors/
     └── sonic-classic-collection/
+    # CDN games (GitHub Pages): bob-the-robber-2, drive-mad, retro-bowl, slope, vex3-6
 ```
 
 ## Running the Project
@@ -61,6 +58,14 @@ A modern game portal website that hosts browser-based games. Features a sleek da
 Configured as autoscale deployment running `node server.js`.
 
 ## Recent Changes
+- January 17, 2026: Size optimization
+  - Migrated 8 games to GitHub Pages CDN (bob-the-robber-2, drive-mad, retro-bowl, slope, vex3-6)
+  - CDN URL: https://shindo957-official.github.io/ShindoHub/games/
+  - Converted images to WebP format (5.3MB → 1.2MB)
+  - Compressed menu music (4.7MB → 1.9MB)
+  - Removed unused dependencies
+  - Total project size reduced from 447MB to 168MB
+
 - January 17, 2026: Major feature update
   - Added loading screen with animated progress bar and "Made by Shindo Productions" credit
   - Games now open in a modal with fullscreen button
