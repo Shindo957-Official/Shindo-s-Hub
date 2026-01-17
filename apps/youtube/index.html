@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube - Shindo's Hub</title>
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
-    <script src="/uv/uv.bundle.js"></script>
-    <script src="/uv.config.js"></script>
-    <script src="/epoxy/index.js"></script>
-    <script src="/baremux/index.js"></script>
     <style>
         * {
             margin: 0;
@@ -19,21 +15,14 @@
             background: #1a1a2e;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
         .header {
             background: #16213e;
             padding: 15px 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid #0f3460;
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
             gap: 15px;
+            border-bottom: 2px solid #0f3460;
         }
         .back-btn {
             color: #fff;
@@ -60,186 +49,158 @@
             color: #e94560;
         }
         .content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             padding: 40px 20px;
-            text-align: center;
-        }
-        .youtube-icon {
-            font-size: 80px;
-            color: #e94560;
-            margin-bottom: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         h1 {
             color: #fff;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #888;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            color: #e94560;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .card:hover {
+            border-color: #e94560;
+            transform: translateY(-5px);
+        }
+        .card-icon {
             font-size: 2.5rem;
             margin-bottom: 15px;
+            color: #e94560;
         }
-        p {
-            color: #aaa;
-            font-size: 1.1rem;
-            max-width: 500px;
-            margin-bottom: 30px;
-            line-height: 1.6;
+        .card h3 {
+            margin-bottom: 10px;
         }
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 500px;
-        }
-        .search-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            background: #0f3460;
-            color: #fff;
-            outline: none;
-        }
-        .search-input::placeholder {
-            color: #666;
-        }
-        .go-btn {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #e94560, #ff6b6b);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .go-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
-        }
-        .quick-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .quick-link {
-            padding: 12px 24px;
-            background: #0f3460;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            font-size: 1rem;
-        }
-        .quick-link:hover {
-            background: #e94560;
-            transform: translateY(-2px);
-        }
-        .status {
-            margin-top: 20px;
+        .card p {
             color: #888;
             font-size: 0.9rem;
+            line-height: 1.5;
         }
-        .status.ready {
-            color: #4ade80;
+        .card-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #0f3460;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 15px;
         }
-        .status.loading {
-            color: #fbbf24;
+        .card-tag.recommended {
+            background: #e94560;
         }
-        .status.error {
-            color: #ef4444;
+        .info-box {
+            background: #0f3460;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        .info-box h3 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .info-box p {
+            color: #888;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="header-left">
-            <a href="/" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
-            <div class="title">
-                <i class="fab fa-youtube"></i>
-                YouTube
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <div class="title">
+            <i class="fab fa-youtube"></i>
+            YouTube
+        </div>
+    </div>
+    
+    <div class="content">
+        <h1><i class="fab fa-youtube" style="color: #e94560;"></i> Watch YouTube</h1>
+        <p class="subtitle">Access YouTube through privacy-friendly alternatives</p>
+        
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-star"></i> Recommended - Invidious Instances
+            </div>
+            <div class="cards">
+                <a href="https://invidious.nerdvpn.de/" target="_blank" class="card">
+                    <div class="card-icon"><i class="fab fa-youtube"></i></div>
+                    <h3>Invidious (NerdVPN)</h3>
+                    <p>Privacy-focused YouTube frontend. No ads, no tracking. Watch videos freely.</p>
+                    <span class="card-tag recommended">Recommended</span>
+                </a>
+                <a href="https://yewtu.be/" target="_blank" class="card">
+                    <div class="card-icon"><i class="fab fa-youtube"></i></div>
+                    <h3>Yewtu.be</h3>
+                    <p>Fast Invidious instance with reliable uptime and good video quality.</p>
+                    <span class="card-tag">Popular</span>
+                </a>
+                <a href="https://vid.puffyan.us/" target="_blank" class="card">
+                    <div class="card-icon"><i class="fab fa-youtube"></i></div>
+                    <h3>Puffyan</h3>
+                    <p>Stable Invidious instance with low latency and consistent performance.</p>
+                    <span class="card-tag">Reliable</span>
+                </a>
+                <a href="https://inv.nadeko.net/" target="_blank" class="card">
+                    <div class="card-icon"><i class="fab fa-youtube"></i></div>
+                    <h3>Nadeko</h3>
+                    <p>Alternative Invidious instance for when others are down.</p>
+                    <span class="card-tag">Backup</span>
+                </a>
             </div>
         </div>
-    </div>
-    <div class="content">
-        <i class="fab fa-youtube youtube-icon"></i>
-        <h1>Watch YouTube</h1>
-        <p>Browse YouTube and other sites through Shindo's Hub proxy. Enter a URL or click a quick link below.</p>
         
-        <div class="search-box">
-            <input type="text" class="search-input" id="urlInput" placeholder="Enter URL (e.g., youtube.com)" onkeypress="if(event.key==='Enter')go()">
-            <button class="go-btn" onclick="go()"><i class="fas fa-play"></i> Go</button>
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-globe"></i> Other Sites
+            </div>
+            <div class="cards">
+                <a href="https://www.google.com/" target="_blank" class="card">
+                    <div class="card-icon"><i class="fab fa-google"></i></div>
+                    <h3>Google</h3>
+                    <p>Search the web for anything you need.</p>
+                </a>
+                <a href="https://duckduckgo.com/" target="_blank" class="card">
+                    <div class="card-icon"><i class="fas fa-search"></i></div>
+                    <h3>DuckDuckGo</h3>
+                    <p>Privacy-focused search engine that doesn't track you.</p>
+                </a>
+            </div>
         </div>
         
-        <div class="quick-links">
-            <button class="quick-link" onclick="navigate('https://invidious.nerdvpn.de/')"><i class="fab fa-youtube"></i> Invidious</button>
-            <button class="quick-link" onclick="navigate('https://www.youtube.com/')"><i class="fab fa-youtube"></i> YouTube</button>
-            <button class="quick-link" onclick="navigate('https://www.google.com/')"><i class="fab fa-google"></i> Google</button>
-            <button class="quick-link" onclick="navigate('https://discord.com/')"><i class="fab fa-discord"></i> Discord</button>
+        <div class="info-box">
+            <h3><i class="fas fa-info-circle"></i> About Invidious</h3>
+            <p>Invidious is an open-source alternative front-end to YouTube. It lets you watch YouTube videos without ads, tracking, or needing a Google account. If one instance is slow or down, try another one from the list above. All instances connect to YouTube's servers but through a privacy-preserving layer.</p>
         </div>
-        
-        <p class="status" id="status">Initializing proxy...</p>
     </div>
-
-    <script>
-        let swReady = false;
-
-        async function registerSW() {
-            const statusEl = document.getElementById('status');
-            statusEl.className = 'status loading';
-            statusEl.textContent = 'Loading proxy...';
-            
-            try {
-                if (!navigator.serviceWorker) {
-                    throw new Error('Service Workers not supported');
-                }
-
-                const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-                await connection.setTransport("/epoxy/index.mjs", [{ wisp: location.origin.replace("http", "ws") + "/wisp/" }]);
-
-                await navigator.serviceWorker.register('/sw.js', { scope: '/service/' });
-                
-                swReady = true;
-                statusEl.className = 'status ready';
-                statusEl.textContent = 'Proxy ready! Enter a URL above.';
-            } catch (err) {
-                console.error('SW Error:', err);
-                statusEl.className = 'status error';
-                statusEl.textContent = 'Proxy error: ' + err.message;
-            }
-        }
-
-        function go() {
-            let url = document.getElementById('urlInput').value.trim();
-            if (!url) return;
-            
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url;
-            }
-            
-            navigate(url);
-        }
-
-        function navigate(url) {
-            if (!swReady) {
-                alert('Proxy is still loading. Please wait...');
-                return;
-            }
-            
-            const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
-            window.location.href = encoded;
-        }
-
-        registerSW();
-    </script>
 </body>
 </html>
