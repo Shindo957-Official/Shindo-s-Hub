@@ -139,12 +139,12 @@ function renderRecentlyPlayed() {
     
     section.style.display = 'block';
     container.innerHTML = recentGames.map(game => `
-        <a href="games/${game.id}/" class="game-card" onclick="trackGame('${game.id}', '${game.name.replace(/'/g, "\\'")}', '${game.image}')">
+        <div class="game-card" onclick="openGame('${game.id}', '${game.name.replace(/'/g, "\\'")}')">
             <img src="${game.image}" alt="${game.name}" onerror="this.src='images/placeholder.png'">
             <div class="game-info">
                 <span class="game-title">${game.name}</span>
             </div>
-        </a>
+        </div>
     `).join('');
 }
 
@@ -165,7 +165,7 @@ function renderTopPlayed() {
         const rankClass = index === 0 ? 'rank-gold' : index === 1 ? 'rank-silver' : index === 2 ? 'rank-bronze' : '';
         
         return `
-            <a href="games/${game.id}/" class="game-card top-card" onclick="trackGame('${game.id}', '${game.name.replace(/'/g, "\\'")}', '${game.image}')" data-rank="${index + 1}">
+            <div class="game-card top-card" onclick="openGame('${game.id}', '${game.name.replace(/'/g, "\\'")}')" data-rank="${index + 1}">
                 <div class="rank-badge ${rankClass}">#${index + 1}</div>
                 <img src="${game.image}" alt="${game.name}" onerror="this.style.display='none'">
                 <div class="play-button"><i class="fa-solid fa-play"></i></div>
@@ -173,7 +173,7 @@ function renderTopPlayed() {
                     <span class="game-title">${game.name}</span>
                     <span class="play-count"><i class="fas fa-gamepad"></i> ${formatPlayCount(playCount)} plays</span>
                 </div>
-            </a>
+            </div>
         `;
     }).join('');
 }
@@ -184,7 +184,7 @@ function createGameCard(game) {
     ).join('') : '';
     
     return `
-        <a href="games/${game.id}/" class="game-card" onclick="trackGame('${game.id}', '${game.name.replace(/'/g, "\\'")}', '${game.image}')" data-name="${game.name.toLowerCase()}" data-description="${(game.description || '').toLowerCase()}" data-tags="${(game.tags || []).join(' ').toLowerCase()}">
+        <div class="game-card" onclick="openGame('${game.id}', '${game.name.replace(/'/g, "\\'")}')" data-name="${game.name.toLowerCase()}" data-description="${(game.description || '').toLowerCase()}" data-tags="${(game.tags || []).join(' ').toLowerCase()}">
             <img src="${game.image}" alt="${game.name}" onerror="this.style.display='none'">
             <div class="play-button"><i class="fa-solid fa-play"></i></div>
             <div class="game-info">
@@ -192,7 +192,7 @@ function createGameCard(game) {
                 <span class="game-description">${game.description || ''}</span>
                 ${tagsHTML ? `<div class="game-tags">${tagsHTML}</div>` : ''}
             </div>
-        </a>
+        </div>
     `;
 }
 
@@ -272,7 +272,7 @@ function getSettings() {
     try {
         const stored = localStorage.getItem(SETTINGS_KEY);
         return stored ? JSON.parse(stored) : {
-            uiVersion: '0.5',
+            uiVersion: '0.75',
             musicEnabled: false,
             musicVolume: 65,
             fpsEnabled: false,
@@ -281,7 +281,7 @@ function getSettings() {
         };
     } catch (e) {
         return {
-            uiVersion: '0.5',
+            uiVersion: '0.75',
             musicEnabled: false,
             musicVolume: 65,
             fpsEnabled: false,
@@ -363,6 +363,8 @@ function setUIVersion(version) {
     document.querySelectorAll('.ui-version-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.version === version);
     });
+    
+    applyUIVersion(version);
 }
 
 function toggleMusic() {
@@ -458,14 +460,240 @@ function applyStoredSettings() {
     }
 }
 
+const RATINGS_KEY = 'shindohub_ratings';
+const USER_RATINGS_KEY = 'shindohub_user_ratings';
+const USER_AVATAR_KEY = 'shindohub_user_avatars';
+let currentGameId = null;
+
+const AVATARS = [
+    'images/cuphead.jpg',
+    'images/vex7.jpeg',
+    'images/vex6.jpeg',
+    'images/sonic-r.jpg',
+    'images/sonic-colors.webp',
+    'images/minecraft.webp',
+    'images/fnf-sonic-exe.jpg',
+    'images/moto-x3m.jpg',
+    'images/retro-bowl.jpg',
+    'images/slope.jpg',
+    'images/geometry-dash-lite.webp',
+    'images/cookie-clicker.webp'
+];
+
+function getRatings() {
+    try {
+        return JSON.parse(localStorage.getItem(RATINGS_KEY) || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveRatings(ratings) {
+    localStorage.setItem(RATINGS_KEY, JSON.stringify(ratings));
+}
+
+function getUserRatings() {
+    try {
+        return JSON.parse(localStorage.getItem(USER_RATINGS_KEY) || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveUserRatings(ratings) {
+    localStorage.setItem(USER_RATINGS_KEY, JSON.stringify(ratings));
+}
+
+function rateGame(gameId, rating) {
+    const user = getCurrentUser();
+    if (!user) return;
+    
+    const userRatings = getUserRatings();
+    const ratings = getRatings();
+    
+    if (!ratings[gameId]) {
+        ratings[gameId] = { total: 0, count: 0 };
+    }
+    
+    if (userRatings[gameId]) {
+        ratings[gameId].total -= userRatings[gameId];
+    } else {
+        ratings[gameId].count++;
+    }
+    
+    ratings[gameId].total += rating;
+    userRatings[gameId] = rating;
+    
+    saveRatings(ratings);
+    saveUserRatings(userRatings);
+    updateStarDisplay(gameId, rating);
+    updateAvgRating(gameId);
+}
+
+function updateStarDisplay(gameId, userRating) {
+    const stars = document.querySelectorAll('#starRating i');
+    stars.forEach((star, i) => {
+        star.classList.toggle('active', i < userRating);
+    });
+}
+
+function updateAvgRating(gameId) {
+    const ratings = getRatings();
+    const avgEl = document.getElementById('avgRating');
+    
+    if (ratings[gameId] && ratings[gameId].count > 0) {
+        const avg = (ratings[gameId].total / ratings[gameId].count).toFixed(1);
+        avgEl.textContent = `(${avg}/5 from ${ratings[gameId].count} ratings)`;
+    } else {
+        avgEl.textContent = '';
+    }
+}
+
+function openGame(gameId, gameName) {
+    currentGameId = gameId;
+    const modal = document.getElementById('gameModal');
+    const frame = document.getElementById('gameFrame');
+    const title = document.getElementById('gameModalTitle');
+    
+    title.textContent = gameName;
+    frame.src = `games/${gameId}/`;
+    modal.classList.add('active');
+    
+    trackGame(gameId, gameName, gamesData.find(g => g.id === gameId)?.image || '');
+    
+    const userRatings = getUserRatings();
+    updateStarDisplay(gameId, userRatings[gameId] || 0);
+    updateAvgRating(gameId);
+    
+    const stars = document.querySelectorAll('#starRating i');
+    stars.forEach(star => {
+        star.onclick = () => rateGame(gameId, parseInt(star.dataset.rating));
+    });
+}
+
+function closeGameModal() {
+    const modal = document.getElementById('gameModal');
+    const frame = document.getElementById('gameFrame');
+    modal.classList.remove('active');
+    frame.src = '';
+    currentGameId = null;
+    
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+}
+
+function toggleFullscreen() {
+    const modal = document.getElementById('gameModal');
+    if (!document.fullscreenElement) {
+        modal.requestFullscreen().catch(() => {});
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function getUserAvatars() {
+    try {
+        return JSON.parse(localStorage.getItem(USER_AVATAR_KEY) || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveUserAvatars(avatars) {
+    localStorage.setItem(USER_AVATAR_KEY, JSON.stringify(avatars));
+}
+
+function openAvatarPicker() {
+    const user = getCurrentUser();
+    if (!user) return;
+    
+    const modal = document.getElementById('avatarModal');
+    const grid = document.getElementById('avatarGrid');
+    const userAvatars = getUserAvatars();
+    
+    grid.innerHTML = AVATARS.map((avatar, i) => `
+        <div class="avatar-option ${userAvatars[user] === avatar ? 'selected' : ''}" onclick="selectAvatar('${avatar}')">
+            <img src="${avatar}" alt="Avatar ${i + 1}">
+        </div>
+    `).join('');
+    
+    modal.classList.add('active');
+}
+
+function closeAvatarPicker() {
+    document.getElementById('avatarModal').classList.remove('active');
+}
+
+function selectAvatar(avatar) {
+    const user = getCurrentUser();
+    if (!user) return;
+    
+    const avatars = getUserAvatars();
+    avatars[user] = avatar;
+    saveUserAvatars(avatars);
+    
+    updateAccountUI();
+    closeAvatarPicker();
+}
+
+function simulateLoading() {
+    const progress = document.getElementById('loadingProgress');
+    const loadingScreen = document.getElementById('loadingScreen');
+    let width = 0;
+    
+    const interval = setInterval(() => {
+        width += Math.random() * 15 + 5;
+        if (width >= 100) {
+            width = 100;
+            progress.style.width = width + '%';
+            clearInterval(interval);
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 300);
+        } else {
+            progress.style.width = width + '%';
+        }
+    }, 100);
+}
+
+function applyUIVersion(version) {
+    document.body.classList.remove('ui-old', 'ui-02', 'ui-05', 'ui-075');
+    if (version === 'old') {
+        document.body.classList.add('ui-old');
+    } else if (version === '0.2') {
+        document.body.classList.add('ui-02');
+    } else if (version === '0.5') {
+        document.body.classList.add('ui-05');
+    } else if (version === '0.75') {
+        document.body.classList.add('ui-075');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    simulateLoading();
     init();
     applyStoredSettings();
     updateAccountUI();
     
+    const settings = getSettings();
+    applyUIVersion(settings.uiVersion || '0.75');
+    
     document.getElementById('settingsModal').addEventListener('click', (e) => {
         if (e.target.id === 'settingsModal') {
             closeSettings();
+        }
+    });
+    
+    document.getElementById('avatarModal').addEventListener('click', (e) => {
+        if (e.target.id === 'avatarModal') {
+            closeAvatarPicker();
+        }
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('gameModal').classList.contains('active')) {
+            closeGameModal();
         }
     });
 });
@@ -631,6 +859,18 @@ function updateAccountUI() {
             badge.className = 'account-badge member';
             document.getElementById('adminPanel').style.display = 'none';
         }
+        
+        const avatars = getUserAvatars();
+        const avatarImg = document.getElementById('avatarImage');
+        const avatarIcon = document.getElementById('avatarIcon');
+        if (avatars[user]) {
+            avatarImg.src = avatars[user];
+            avatarImg.style.display = 'block';
+            avatarIcon.style.display = 'none';
+        } else {
+            avatarImg.style.display = 'none';
+            avatarIcon.style.display = 'block';
+        }
     } else {
         loggedOut.style.display = 'block';
         loggedIn.style.display = 'none';
@@ -710,3 +950,9 @@ window.adminResetPlayCounts = adminResetPlayCounts;
 window.adminViewUsers = adminViewUsers;
 window.adminDeleteUser = adminDeleteUser;
 window.adminClearAllAccounts = adminClearAllAccounts;
+window.openGame = openGame;
+window.closeGameModal = closeGameModal;
+window.toggleFullscreen = toggleFullscreen;
+window.openAvatarPicker = openAvatarPicker;
+window.closeAvatarPicker = closeAvatarPicker;
+window.selectAvatar = selectAvatar;

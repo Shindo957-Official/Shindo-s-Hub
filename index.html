@@ -17,6 +17,16 @@
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
 </head>
 <body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <img src="images/logo.png" alt="Shindo's Hub" class="loading-logo">
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+            <p class="loading-text">Loading...</p>
+            <p class="loading-credit">Made by <span>Shindo Productions</span></p>
+        </div>
+    </div>
     <nav>
         <div class="nav-left">
             <img src="images/logo.png" alt="logo">
@@ -54,26 +64,30 @@
                             <button class="account-tab active" onclick="showAccountTab('login')">Login</button>
                             <button class="account-tab" onclick="showAccountTab('register')">Register</button>
                         </div>
-                        <div id="loginForm" class="account-form">
-                            <input type="text" id="loginUsername" placeholder="Username" class="account-input">
-                            <input type="password" id="loginPassword" placeholder="Password" class="account-input">
-                            <button class="settings-action-btn" onclick="loginAccount()">
+                        <form id="loginForm" class="account-form" onsubmit="event.preventDefault(); loginAccount();">
+                            <input type="text" id="loginUsername" placeholder="Username" class="account-input" autocomplete="username">
+                            <input type="password" id="loginPassword" placeholder="Password" class="account-input" autocomplete="current-password">
+                            <button type="submit" class="settings-action-btn">
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </button>
-                        </div>
-                        <div id="registerForm" class="account-form" style="display:none;">
-                            <input type="text" id="registerUsername" placeholder="Username" class="account-input">
-                            <input type="password" id="registerPassword" placeholder="Password" class="account-input">
-                            <input type="password" id="registerConfirm" placeholder="Confirm Password" class="account-input">
-                            <button class="settings-action-btn" onclick="registerAccount()">
+                        </form>
+                        <form id="registerForm" class="account-form" style="display:none;" onsubmit="event.preventDefault(); registerAccount();">
+                            <input type="text" id="registerUsername" placeholder="Username" class="account-input" autocomplete="username">
+                            <input type="password" id="registerPassword" placeholder="Password" class="account-input" autocomplete="new-password">
+                            <input type="password" id="registerConfirm" placeholder="Confirm Password" class="account-input" autocomplete="new-password">
+                            <button type="submit" class="settings-action-btn">
                                 <i class="fas fa-user-plus"></i> Create Account
                             </button>
-                        </div>
+                        </form>
                         <div id="accountError" class="account-error"></div>
                     </div>
                     <div id="accountLoggedIn" style="display:none;">
                         <div class="account-info">
-                            <div class="account-avatar"><i class="fas fa-user-circle"></i></div>
+                            <div class="account-avatar" id="userAvatar" onclick="openAvatarPicker()">
+                                <img src="" alt="" id="avatarImage" style="display:none;">
+                                <i class="fas fa-user-circle" id="avatarIcon"></i>
+                                <span class="avatar-edit"><i class="fas fa-pencil"></i></span>
+                            </div>
                             <div class="account-details">
                                 <span class="account-username" id="displayUsername"></span>
                                 <span class="account-badge" id="accountBadge"></span>
@@ -112,7 +126,8 @@
                     <div class="ui-version-selector">
                         <button class="ui-version-btn" data-version="old" onclick="setUIVersion('old')">Old</button>
                         <button class="ui-version-btn" data-version="0.2" onclick="setUIVersion('0.2')">0.2</button>
-                        <button class="ui-version-btn active" data-version="0.5" onclick="setUIVersion('0.5')">0.5 (New)</button>
+                        <button class="ui-version-btn" data-version="0.5" onclick="setUIVersion('0.5')">0.5</button>
+                        <button class="ui-version-btn active" data-version="0.75" onclick="setUIVersion('0.75')">0.75 (New)</button>
                     </div>
                 </div>
 
@@ -171,6 +186,44 @@
     <audio id="menuMusic" loop>
         <source src="/audio/menu-music.mp3" type="audio/mpeg">
     </audio>
+
+    <div class="avatar-modal" id="avatarModal">
+        <div class="avatar-modal-content">
+            <div class="avatar-modal-header">
+                <h3><i class="fas fa-image"></i> Choose Avatar</h3>
+                <button class="settings-close" onclick="closeAvatarPicker()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="avatar-grid" id="avatarGrid"></div>
+        </div>
+    </div>
+
+    <div class="game-modal" id="gameModal">
+        <div class="game-modal-header">
+            <span class="game-modal-title" id="gameModalTitle">Game</span>
+            <div class="game-modal-controls">
+                <button class="game-control-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="game-control-btn" onclick="closeGameModal()" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <iframe id="gameFrame" src="" allowfullscreen></iframe>
+        <div class="game-modal-footer">
+            <div class="game-rating">
+                <span>Rate this game:</span>
+                <div class="star-rating" id="starRating">
+                    <i class="fas fa-star" data-rating="1"></i>
+                    <i class="fas fa-star" data-rating="2"></i>
+                    <i class="fas fa-star" data-rating="3"></i>
+                    <i class="fas fa-star" data-rating="4"></i>
+                    <i class="fas fa-star" data-rating="5"></i>
+                </div>
+                <span class="avg-rating" id="avgRating"></span>
+            </div>
+        </div>
+    </div>
 
     <div class="recently-played-section" id="recently-played-section" style="display: none;">
         <h2><i class="fas fa-clock"></i> Recently Played</h2>
