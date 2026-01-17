@@ -17,7 +17,6 @@
     "express": "^5.2.1",
     "http-proxy-middleware": "^3.0.5",
     "http-server": "^14.1.1",
-    "node-fetch": "^3.3.2",
     "wisp-server-node": "^1.1.8"
   }
 }
