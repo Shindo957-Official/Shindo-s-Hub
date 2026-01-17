@@ -549,6 +549,17 @@ function updateAvgRating(gameId) {
     }
 }
 
+const CDN_GAMES = {
+    'bob-the-robber-2': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/bob-the-robber-2/',
+    'drive-mad': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/drive-mad/',
+    'retro-bowl': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/retro-bowl/',
+    'slope': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/slope/',
+    'vex3': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex3/',
+    'vex4': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex4/',
+    'vex5': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex5/',
+    'vex6': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex6/'
+};
+
 function openGame(gameId, gameName) {
     currentGameId = gameId;
     const modal = document.getElementById('gameModal');
@@ -556,7 +567,7 @@ function openGame(gameId, gameName) {
     const title = document.getElementById('gameModalTitle');
     
     title.textContent = gameName;
-    frame.src = `games/${gameId}/`;
+    frame.src = CDN_GAMES[gameId] || `games/${gameId}/`;
     modal.classList.add('active');
     
     trackGame(gameId, gameName, gamesData.find(g => g.id === gameId)?.image || '');
