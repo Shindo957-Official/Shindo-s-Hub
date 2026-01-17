@@ -11,7 +11,9 @@ const gamesData = [
     { id: 'drive-mad', name: 'Drive Mad', image: 'images/drive-mad.jpg', description: 'Physics-based driving challenges', tags: ['Racing', 'Puzzle'] },
     { id: 'slope', name: 'Slope', image: 'images/slope.jpg', description: 'Roll down endless slopes', tags: ['Arcade', 'Endless'] },
     { id: 'motox3m2', name: 'Moto X3M 2', image: 'images/motox3m2.jpg', description: 'More extreme bike stunts', tags: ['Racing', 'Sports'] },
-    { id: 'minecraft', name: 'Minecraft', image: 'images/mc.png', description: 'Build and explore blocky worlds', tags: ['Sandbox', 'Adventure'] },
+    { id: 'minecraft-1-8-8', name: 'Minecraft 1.8.8', image: 'images/minecraft.jpg', description: 'Classic Minecraft in your browser', tags: ['Sandbox', 'Adventure'] },
+    { id: 'minecraft-1-12-2', name: 'Minecraft 1.12.2', image: 'images/minecraft.jpg', description: 'Minecraft with more features', tags: ['Sandbox', 'Adventure'] },
+    { id: 'minecraft-1-21-4', name: 'Minecraft 1.21.4', image: 'images/minecraft.jpg', description: 'Latest Minecraft web client', tags: ['Sandbox', 'Adventure'] },
     { id: 'vex3', name: 'VEX 3', image: 'images/vex3.jpg', description: 'Classic stickman platforming', tags: ['Platformer', 'Action'] },
     { id: 'vex4', name: 'VEX 4', image: 'images/vex4.jpg', description: 'More challenging obstacles', tags: ['Platformer', 'Action'] },
     { id: 'vex5', name: 'VEX 5', image: 'images/vex5.jpg', description: 'Ultimate platform challenge', tags: ['Platformer', 'Action'] }
