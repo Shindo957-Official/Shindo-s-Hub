@@ -550,14 +550,14 @@ function updateAvgRating(gameId) {
 }
 
 const CDN_GAMES = {
-    'bob-the-robber-2': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/bob-the-robber-2/',
-    'drive-mad': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/drive-mad/',
-    'retro-bowl': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/retro-bowl/',
-    'slope': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/slope/',
-    'vex3': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex3/',
-    'vex4': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex4/',
-    'vex5': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex5/',
-    'vex6': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex6/'
+    'bob-the-robber-2': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/bob-the-robber-2/index.html',
+    'drive-mad': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/drive-mad/index.html',
+    'retro-bowl': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/retro-bowl/index.html',
+    'slope': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/slope/index.html',
+    'vex3': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex3/index.html',
+    'vex4': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex4/index.html',
+    'vex5': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex5/index.html',
+    'vex6': 'https://cdn.jsdelivr.net/gh/Shindo957-Official/ShindoHub@main/games/vex6/index.html'
 };
 
 function openGame(gameId, gameName) {
