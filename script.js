@@ -269,6 +269,7 @@ function getSettings() {
         return stored ? JSON.parse(stored) : {
             uiVersion: '0.5',
             musicEnabled: false,
+            musicVolume: 65,
             fpsEnabled: false,
             webglEnabled: true,
             mobileUIEnabled: false
@@ -277,6 +278,7 @@ function getSettings() {
         return {
             uiVersion: '0.5',
             musicEnabled: false,
+            musicVolume: 65,
             fpsEnabled: false,
             webglEnabled: true,
             mobileUIEnabled: false
@@ -309,9 +311,23 @@ function loadSettingsState() {
     document.getElementById('webglToggle').checked = settings.webglEnabled;
     document.getElementById('mobileUIToggle').checked = settings.mobileUIEnabled;
     
+    const volume = settings.musicVolume || 65;
+    document.getElementById('volumeSlider').value = volume;
+    document.getElementById('volumeValue').textContent = volume + '%';
+    
     document.querySelectorAll('.ui-version-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.version === settings.uiVersion);
     });
+}
+
+function setVolume(value) {
+    const settings = getSettings();
+    const audio = document.getElementById('menuMusic');
+    settings.musicVolume = parseInt(value);
+    saveSettings(settings);
+    
+    audio.volume = value / 100;
+    document.getElementById('volumeValue').textContent = value + '%';
 }
 
 function openAboutBlank() {
@@ -351,7 +367,7 @@ function toggleMusic() {
     saveSettings(settings);
     
     if (settings.musicEnabled) {
-        audio.volume = 0.65;
+        audio.volume = (settings.musicVolume || 65) / 100;
         audio.play().catch(() => {
             console.log('Audio autoplay blocked');
         });
@@ -432,7 +448,7 @@ function applyStoredSettings() {
     
     if (settings.musicEnabled) {
         const audio = document.getElementById('menuMusic');
-        audio.volume = 0.65;
+        audio.volume = (settings.musicVolume || 65) / 100;
         audio.play().catch(() => {});
     }
 }
@@ -459,3 +475,4 @@ window.toggleMusic = toggleMusic;
 window.toggleFPS = toggleFPS;
 window.toggleWebGL = toggleWebGL;
 window.toggleMobileUI = toggleMobileUI;
+window.setVolume = setVolume;

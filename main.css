@@ -840,6 +840,55 @@ footer p {
     white-space: nowrap;
 }
 
+.volume-row {
+    gap: 12px;
+}
+
+.volume-row span {
+    color: var(--text-secondary);
+    min-width: 40px;
+    text-align: center;
+}
+
+.volume-row span:first-child {
+    min-width: 20px;
+}
+
+.volume-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
 .toggle-switch {
     position: relative;
     width: 52px;
