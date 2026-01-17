@@ -101,6 +101,7 @@ function saveRecentlyPlayed(games) {
 
 function trackGame(id, name, image) {
     incrementPlayCount(id);
+    renderTopPlayed();
     
     const recentGames = getRecentlyPlayed();
     const existingIndex = recentGames.findIndex(g => g.id === id);
