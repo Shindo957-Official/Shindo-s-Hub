@@ -35,6 +35,45 @@ const PLAY_COUNT_KEY = 'shindohub_play_counts';
 const MAX_RECENT_GAMES = 8;
 const TOP_PLAYED_COUNT = 6;
 
+const APP_VERSION = '1.00';
+const APP_CHANNEL = 'Stable';
+const UPDATE_LOG_KEY = 'shindohub_update_log_seen';
+
+function checkUpdateLog() {
+    const seenVersion = localStorage.getItem(UPDATE_LOG_KEY);
+    if (seenVersion !== APP_VERSION) {
+        setTimeout(() => showUpdateLog(), 500);
+    }
+}
+
+function showUpdateLog() {
+    const modal = document.getElementById('updateLogModal');
+    const gameList = document.getElementById('updateGameList');
+    
+    gameList.innerHTML = gamesData.map(game => 
+        `<div class="game-list-item">${game.name}</div>`
+    ).join('');
+    
+    modal.classList.add('active');
+    
+    const dontShowCheckbox = document.getElementById('dontShowAgain');
+    dontShowCheckbox.checked = localStorage.getItem(UPDATE_LOG_KEY) === APP_VERSION;
+}
+
+function closeUpdateLog() {
+    const modal = document.getElementById('updateLogModal');
+    modal.classList.remove('active');
+}
+
+function toggleDontShowAgain() {
+    const checkbox = document.getElementById('dontShowAgain');
+    if (checkbox.checked) {
+        localStorage.setItem(UPDATE_LOG_KEY, APP_VERSION);
+    } else {
+        localStorage.removeItem(UPDATE_LOG_KEY);
+    }
+}
+
 function getPlayCounts() {
     try {
         const stored = localStorage.getItem(PLAY_COUNT_KEY);
@@ -686,6 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
     init();
     applyStoredSettings();
     updateAccountUI();
+    checkUpdateLog();
     
     const settings = getSettings();
     applyUIVersion(settings.uiVersion || '0.75');
@@ -706,6 +746,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape' && document.getElementById('gameModal').classList.contains('active')) {
             closeGameModal();
         }
+        if (e.key === 'Escape' && document.getElementById('updateLogModal').classList.contains('active')) {
+            closeUpdateLog();
+        }
+    });
+    
+    document.getElementById('updateLogModal').addEventListener('click', (e) => {
+        if (e.target.id === 'updateLogModal') {
+            closeUpdateLog();
+        }
     });
 });
 
@@ -721,6 +770,9 @@ window.toggleFPS = toggleFPS;
 window.toggleWebGL = toggleWebGL;
 window.toggleMobileUI = toggleMobileUI;
 window.setVolume = setVolume;
+window.showUpdateLog = showUpdateLog;
+window.closeUpdateLog = closeUpdateLog;
+window.toggleDontShowAgain = toggleDontShowAgain;
 
 const ACCOUNTS_KEY = 'shindohub_accounts';
 const CURRENT_USER_KEY = 'shindohub_current_user';

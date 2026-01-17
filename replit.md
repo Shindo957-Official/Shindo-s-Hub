@@ -17,7 +17,8 @@ A modern game portal website that hosts browser-based games. Features a sleek da
 - **Recently Played**: Tracks last 8 games played using localStorage
 - **Mobile-Friendly**: Responsive design with touch-friendly UI and hamburger menu
 - **Game Descriptions**: Each game includes title, description, and category tags
-- **Settings Panel**: About:blank cloaking, UI version switcher (Old/0.2/0.5/0.75), menu music toggle, FPS counter, WebGL switch, mobile UI toggle
+- **Settings Panel**: About:blank cloaking, UI version switcher (Old/0.2/0.5/0.75), menu music toggle, FPS counter, WebGL switch, mobile UI toggle, version info display
+- **Update Log**: Popup showing version info, new features, and game list - appears on first visit or after updates with "don't show again" option
 - **UI Versions**: Old (red retro), 0.2 (cyan minimal), 0.5 (indigo), 0.75 (violet modern)
 
 ## Project Structure
