@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube - Shindo's Hub</title>
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #1a1a2e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #16213e;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #0f3460;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .back-btn {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #e94560;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #ff6b6b;
+        }
+        .title {
+            color: #fff;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .title i {
+            color: #e94560;
+        }
+        .fullscreen-btn {
+            color: #fff;
+            background: #0f3460;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+        .fullscreen-btn:hover {
+            background: #e94560;
+        }
+        .video-container {
+            flex: 1;
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .loading i {
+            font-size: 3rem;
+            color: #e94560;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <div class="title">
+                <i class="fab fa-youtube"></i>
+                YouTube
+            </div>
+        </div>
+        <button class="fullscreen-btn" onclick="toggleFullscreen()">
+            <i class="fas fa-expand"></i> Fullscreen
+        </button>
+    </div>
+    <div class="video-container">
+        <div class="loading" id="loading">
+            <i class="fas fa-circle-notch"></i>
+            Loading YouTube...
+        </div>
+        <iframe 
+            id="youtubeFrame"
+            src="https://invidious.nerdvpn.de/"
+            allowfullscreen
+            onload="document.getElementById('loading').classList.add('hidden')"
+        ></iframe>
+    </div>
+    <script>
+        function toggleFullscreen() {
+            const iframe = document.getElementById('youtubeFrame');
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) {
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) {
+                iframe.msRequestFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>
