@@ -3,88 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Blazer</title>
     <link rel="stylesheet" href="/main.css">
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
 </head>
 <body>
     <nav>
-        <img src="images/logo.png" alt="logo">
-        <h1>BLAZER</h1>
+        <div class="nav-left">
+            <img src="images/logo.png" alt="logo">
+            <h1>BLAZER</h1>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
     </nav>
+
+    <div class="mobile-nav" id="mobileNav">
+        <a href="#recently-played-section" onclick="closeMobileMenu()">Recently Played</a>
+        <a href="#games" onclick="closeMobileMenu()">All Games</a>
+    </div>
+
+    <div class="recently-played-section" id="recently-played-section" style="display: none;">
+        <h2>Recently Played</h2>
+        <div class="recently-played-games" id="recently-played-games"></div>
+    </div>
 
     <div class="featured">
         <h1>Popular:</h1>
-        <div class="column">
-          <a href="games/bob-the-robber-2/">
-            <img src="images/bob-the-robber-2.png">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-          <a href="games/vex7/">
-            <img src="images/vex7.jpeg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-        </div>
-        <div class="row">
-          <a href="games/vex6">
-            <img src="images/vex6.jpeg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-        </div>
-        <div class="row">
-          <a href="games/drive-mad/">
-            <img src="images/drive-mad.jpg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
+        <div class="featured-grid">
+            <a href="games/bob-the-robber-2/" class="game-card featured-card" onclick="trackGame('bob-the-robber-2', 'Bob the Robber 2', 'images/bob-the-robber-2.png')">
+                <img src="images/bob-the-robber-2.png" alt="Bob the Robber 2">
+                <div class="play-button"><i class="fa-solid fa-play"></i></div>
+                <div class="game-info">
+                    <span class="game-title">Bob the Robber 2</span>
+                </div>
             </a>
-        </div>
-        <div class="column">
-          <a href="games/moto-x3m/">
-            <img src="images/moto-x3m.jpg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-          <a href="games/retro-bowl/">
-            <img src="images/retro-bowl.jpg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-        </div>
+            <a href="games/vex7/" class="game-card featured-card" onclick="trackGame('vex7', 'VEX 7', 'images/vex7.jpeg')">
+                <img src="images/vex7.jpeg" alt="VEX 7">
+                <div class="play-button"><i class="fa-solid fa-play"></i></div>
+                <div class="game-info">
+                    <span class="game-title">VEX 7</span>
+                </div>
+            </a>
+            <a href="games/vex6/" class="game-card featured-card" onclick="trackGame('vex6', 'VEX 6', 'images/vex6.jpeg')">
+                <img src="images/vex6.jpeg" alt="VEX 6">
+                <div class="play-button"><i class="fa-solid fa-play"></i></div>
+                <div class="game-info">
+                    <span class="game-title">VEX 6</span>
+                </div>
+            </a>
+            <a href="games/drive-mad/" class="game-card featured-card" onclick="trackGame('drive-mad', 'Drive Mad', 'images/drive-mad.jpg')">
+                <img src="images/drive-mad.jpg" alt="Drive Mad">
+                <div class="play-button"><i class="fa-solid fa-play"></i></div>
+                <div class="game-info">
+                    <span class="game-title">Drive Mad</span>
+                </div>
+            </a>
+            <a href="games/moto-x3m/" class="game-card featured-card" onclick="trackGame('moto-x3m', 'Moto X3M', 'images/moto-x3m.jpg')">
+                <img src="images/moto-x3m.jpg" alt="Moto X3M">
+                <div class="play-button"><i class="fa-solid fa-play"></i></div>
+                <div class="game-info">
+                    <span class="game-title">Moto X3M</span>
+                </div>
+            </a>
+            <a href="games/retro-bowl/" class="game-card featured-card" onclick="trackGame('retro-bowl', 'Retro Bowl', 'images/retro-bowl.jpg')">
+                <img src="images/retro-bowl.jpg" alt="Retro Bowl">
+                <div class="play-button"><i class="fa-solid fa-play"></i></div>
+                <div class="game-info">
+                    <span class="game-title">Retro Bowl</span>
+                </div>
+            </a>
         </div>
     </div>
 
     <div class="content">
+        <hr>
 
-    <hr>
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="Search games..." oninput="searchGames()">
+            <button><i class="fas fa-search"></i></button>
+        </div>
 
-    <div class="search">
-        <input type="text" placeholder="Search..." oninput="">
-        <button><i class="fas fa-search"></i></button>
-    </div>
+        <div class="no-results" id="noResults" style="display: none;">
+            <i class="fas fa-search"></i>
+            <p>No games found matching your search.</p>
+        </div>
 
-    <div id="games">
-        <a href="games/bob-the-robber-2/"><img src="images/bob-the-robber-2.png" alt="bob the robber 2"></a>
-        <a href="games/vex7/"><img src="images/vex7.jpeg" alt="vex 7"></a>
-        <a href="games/vex6/"><img src="images/vex6.jpeg" alt="vex 6"></a>
-        <a href="games/tomb-of-the-mask/"><img src="images/tomb-of-the-mask.jpg" alt="tomb of the mask"></a>
-        <a href="games/space-waves/"><img src="images/space-waves.jpg" alt="space waves"></a>
-        <a href="games/"><img src="images/mc.png" alt="minecraft"></a>
-        <a href="games/moto-x3m/"><img src="images/moto-x3m.jpg" alt="moto x3m"></a>
-        <a href="games/retro-bowl/"><img src="images/retro-bowl.jpg" alt="retrobowl"></a>
-        <a href="games/drive-mad/"><img src="images/drive-mad.jpg" alt="drive mad"></a>
-        <a href="games/slope/"><img src="images/slope.jpg" alt="slope"></a>
-        <a href="games/motox3m2/"><img src="images/motox3m2.jpg" alt="moto x3m2"></a>
-    </div>
+        <div id="games"></div>
     </div>
 
     <script src="script.js"></script>
