@@ -27,7 +27,8 @@ const gamesData = [
     { id: 'celeste-2', name: 'Celeste 2', image: 'images/celeste-2.webp', description: 'Challenging precision platformer', tags: ['Platformer', 'Indie'] },
     { id: 'cookie-clicker', name: 'Cookie Clicker', image: 'images/cookie-clicker.webp', description: 'Click cookies, build an empire', tags: ['Idle', 'Clicker'] },
     { id: 'geometry-dash-lite', name: 'Geometry Dash Lite', image: 'images/geometry-dash-lite.webp', description: 'Jump and fly through danger', tags: ['Rhythm', 'Arcade'] },
-    { id: 'fnf-rewrite', name: 'FNF vs Rewrite', image: 'images/fnf-sonic-exe.webp', description: 'Rhythm battle vs Rewrite', tags: ['Rhythm', 'Music'] }
+    { id: 'fnf-rewrite', name: 'FNF vs Rewrite', image: 'images/fnf-sonic-exe.webp', description: 'Rhythm battle vs Rewrite', tags: ['Rhythm', 'Music'] },
+    { id: 'tictactoe', name: 'Tic Tac Toe', image: 'images/tictactoe.webp', description: 'Classic X and O strategy game', tags: ['Puzzle', 'Casual'] }
 ];
 
 const RECENTLY_PLAYED_KEY = 'shindohub_recently_played';
@@ -841,7 +842,8 @@ const CDN_GAMES = {
     'vex3': 'https://shindo957-official.github.io/ShindoHub/games/vex3/',
     'vex4': 'https://shindo957-official.github.io/ShindoHub/games/vex4/',
     'vex5': 'https://shindo957-official.github.io/ShindoHub/games/vex5/',
-    'vex6': 'https://shindo957-official.github.io/ShindoHub/games/vex6/'
+    'vex6': 'https://shindo957-official.github.io/ShindoHub/games/vex6/',
+    'tictactoe': 'https://shindo957-official.github.io/ShindoHub/games/TicTacToe/'
 };
 
 function openGame(gameId, gameName) {
