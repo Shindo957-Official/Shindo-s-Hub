@@ -1007,6 +1007,113 @@ footer p {
     background: rgba(239, 68, 68, 0.25) !important;
 }
 
+.admin-section {
+    margin-top: 16px;
+    padding: 16px;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 12px;
+}
+
+.admin-section h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fbbf24;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-btn {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.admin-btn:last-child {
+    margin-bottom: 0;
+}
+
+.admin-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.admin-btn i {
+    color: #fbbf24;
+    width: 16px;
+}
+
+.admin-btn.danger {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.admin-btn.danger i {
+    color: #ef4444;
+}
+
+.admin-btn.danger:hover {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.admin-user-list {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.admin-user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+}
+
+.admin-user-item:last-child {
+    border-bottom: none;
+}
+
+.admin-user-item .username {
+    color: #fff;
+    font-weight: 500;
+}
+
+.admin-user-item .date {
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+.admin-user-item .delete-user {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.admin-user-item .delete-user:hover {
+    opacity: 1;
+}
+
 .toggle-switch {
     position: relative;
     width: 52px;

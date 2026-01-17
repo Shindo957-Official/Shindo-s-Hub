@@ -625,9 +625,11 @@ function updateAccountUI() {
         if (user === ADMIN_USER) {
             badge.textContent = 'Admin';
             badge.className = 'account-badge admin';
+            document.getElementById('adminPanel').style.display = 'block';
         } else {
             badge.textContent = 'Member';
             badge.className = 'account-badge member';
+            document.getElementById('adminPanel').style.display = 'none';
         }
     } else {
         loggedOut.style.display = 'block';
@@ -640,7 +642,71 @@ function updateAccountUI() {
     }
 }
 
+function isAdmin() {
+    return getCurrentUser() === ADMIN_USER;
+}
+
+function adminResetPlayCounts() {
+    if (!isAdmin()) return;
+    if (confirm('Reset all play counts to 0?')) {
+        localStorage.removeItem(PLAY_COUNT_KEY);
+        renderTopPlayed();
+        alert('All play counts have been reset!');
+    }
+}
+
+function adminViewUsers() {
+    if (!isAdmin()) return;
+    const accounts = getAccounts();
+    const userList = document.getElementById('adminUserList');
+    const usernames = Object.keys(accounts);
+    
+    if (usernames.length === 0) {
+        userList.innerHTML = '<div style="color:var(--text-secondary);font-size:12px;">No registered users yet</div>';
+    } else {
+        userList.innerHTML = usernames.map(username => {
+            const date = new Date(accounts[username].created).toLocaleDateString();
+            return `
+                <div class="admin-user-item">
+                    <div>
+                        <span class="username">${username}</span>
+                        <span class="date"> - Joined ${date}</span>
+                    </div>
+                    <button class="delete-user" onclick="adminDeleteUser('${username}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    userList.style.display = userList.style.display === 'none' ? 'block' : 'none';
+}
+
+function adminDeleteUser(username) {
+    if (!isAdmin()) return;
+    if (confirm(`Delete account "${username}"?`)) {
+        const accounts = getAccounts();
+        delete accounts[username];
+        saveAccounts(accounts);
+        adminViewUsers();
+    }
+}
+
+function adminClearAllAccounts() {
+    if (!isAdmin()) return;
+    if (confirm('Delete ALL user accounts? This cannot be undone!')) {
+        localStorage.removeItem(ACCOUNTS_KEY);
+        document.getElementById('adminUserList').style.display = 'none';
+        alert('All user accounts have been deleted!');
+    }
+}
+
 window.showAccountTab = showAccountTab;
 window.loginAccount = loginAccount;
 window.registerAccount = registerAccount;
 window.logoutAccount = logoutAccount;
+window.adminResetPlayCounts = adminResetPlayCounts;
+window.adminViewUsers = adminViewUsers;
+window.adminDeleteUser = adminDeleteUser;
+window.adminClearAllAccounts = adminClearAllAccounts;

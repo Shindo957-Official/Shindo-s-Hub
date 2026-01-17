@@ -79,6 +79,21 @@
                                 <span class="account-badge" id="accountBadge"></span>
                             </div>
                         </div>
+                        <div id="adminPanel" style="display:none;">
+                            <div class="admin-section">
+                                <h4><i class="fas fa-crown"></i> Admin Controls</h4>
+                                <button class="admin-btn" onclick="adminResetPlayCounts()">
+                                    <i class="fas fa-redo"></i> Reset All Play Counts
+                                </button>
+                                <button class="admin-btn" onclick="adminViewUsers()">
+                                    <i class="fas fa-users"></i> View All Users
+                                </button>
+                                <button class="admin-btn danger" onclick="adminClearAllAccounts()">
+                                    <i class="fas fa-trash"></i> Delete All User Accounts
+                                </button>
+                            </div>
+                            <div id="adminUserList" class="admin-user-list" style="display:none;"></div>
+                        </div>
                         <button class="settings-action-btn logout-btn" onclick="logoutAccount()">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </button>
