@@ -351,6 +351,7 @@ function toggleMusic() {
     saveSettings(settings);
     
     if (settings.musicEnabled) {
+        audio.volume = 0.65;
         audio.play().catch(() => {
             console.log('Audio autoplay blocked');
         });
@@ -431,6 +432,7 @@ function applyStoredSettings() {
     
     if (settings.musicEnabled) {
         const audio = document.getElementById('menuMusic');
+        audio.volume = 0.65;
         audio.play().catch(() => {});
     }
 }
