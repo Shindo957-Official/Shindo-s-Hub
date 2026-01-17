@@ -1,4 +1,5 @@
 const gamesData = [
+    { id: 'cuphead', name: 'Cuphead', image: 'images/cuphead.jpg', description: 'Run and gun action game', tags: ['Action', 'Boss Rush'] },
     { id: 'bob-the-robber-2', name: 'Bob the Robber 2', image: 'images/bob-the-robber-2.png', description: 'Sneak through levels and steal treasures', tags: ['Stealth', 'Puzzle'] },
     { id: 'vex7', name: 'VEX 7', image: 'images/vex7.jpeg', description: 'Intense stickman platformer action', tags: ['Platformer', 'Action'] },
     { id: 'vex6', name: 'VEX 6', image: 'images/vex6.jpeg', description: 'Navigate deadly obstacle courses', tags: ['Platformer', 'Action'] },
@@ -11,16 +12,59 @@ const gamesData = [
     { id: 'drive-mad', name: 'Drive Mad', image: 'images/drive-mad.jpg', description: 'Physics-based driving challenges', tags: ['Racing', 'Puzzle'] },
     { id: 'slope', name: 'Slope', image: 'images/slope.jpg', description: 'Roll down endless slopes', tags: ['Arcade', 'Endless'] },
     { id: 'motox3m2', name: 'Moto X3M 2', image: 'images/motox3m2.jpg', description: 'More extreme bike stunts', tags: ['Racing', 'Sports'] },
-    { id: 'minecraft-1-8-8', name: 'Minecraft 1.8.8', image: 'images/minecraft.jpg', description: 'Classic Minecraft in your browser', tags: ['Sandbox', 'Adventure'] },
-    { id: 'minecraft-1-12-2', name: 'Minecraft 1.12.2', image: 'images/minecraft.jpg', description: 'Minecraft with more features', tags: ['Sandbox', 'Adventure'] },
-    { id: 'minecraft-1-21-4', name: 'Minecraft 1.21.4', image: 'images/minecraft.jpg', description: 'Latest Minecraft web client', tags: ['Sandbox', 'Adventure'] },
+    { id: 'minecraft-1-8-8', name: 'Minecraft 1.8.8', image: 'images/minecraft.webp', description: 'Classic Minecraft in your browser', tags: ['Sandbox', 'Adventure'] },
+    { id: 'minecraft-1-12-2', name: 'Minecraft 1.12.2', image: 'images/minecraft.webp', description: 'Minecraft with more features', tags: ['Sandbox', 'Adventure'] },
+    { id: 'minecraft-1-21-4', name: 'Minecraft 1.21.4', image: 'images/minecraft.webp', description: 'Latest Minecraft web client', tags: ['Sandbox', 'Adventure'] },
     { id: 'vex3', name: 'VEX 3', image: 'images/vex3.jpg', description: 'Classic stickman platforming', tags: ['Platformer', 'Action'] },
     { id: 'vex4', name: 'VEX 4', image: 'images/vex4.jpg', description: 'More challenging obstacles', tags: ['Platformer', 'Action'] },
-    { id: 'vex5', name: 'VEX 5', image: 'images/vex5.jpg', description: 'Ultimate platform challenge', tags: ['Platformer', 'Action'] }
+    { id: 'vex5', name: 'VEX 5', image: 'images/vex5.jpg', description: 'Ultimate platform challenge', tags: ['Platformer', 'Action'] },
+    { id: '1v1lol', name: '1v1.LOL', image: 'images/1v1lol.jpg', description: 'Build and shoot battle royale', tags: ['Shooter', 'Battle Royale'] },
+    { id: '2048', name: '2048', image: 'images/2048.png', description: 'Addictive number puzzle', tags: ['Puzzle', 'Casual'] }
 ];
 
-const RECENTLY_PLAYED_KEY = 'blazer_recently_played';
+const RECENTLY_PLAYED_KEY = 'shindohub_recently_played';
+const PLAY_COUNT_KEY = 'shindohub_play_counts';
 const MAX_RECENT_GAMES = 8;
+const TOP_PLAYED_COUNT = 6;
+
+function getPlayCounts() {
+    try {
+        const stored = localStorage.getItem(PLAY_COUNT_KEY);
+        return stored ? JSON.parse(stored) : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+function savePlayCounts(counts) {
+    try {
+        localStorage.setItem(PLAY_COUNT_KEY, JSON.stringify(counts));
+    } catch (e) {
+        console.warn('Could not save play counts');
+    }
+}
+
+function incrementPlayCount(gameId) {
+    const counts = getPlayCounts();
+    counts[gameId] = (counts[gameId] || 0) + 1;
+    savePlayCounts(counts);
+}
+
+function getTopPlayedGames() {
+    const counts = getPlayCounts();
+    const gamesWithCounts = gamesData.map(game => ({
+        ...game,
+        playCount: counts[game.id] || 0
+    }));
+    
+    gamesWithCounts.sort((a, b) => b.playCount - a.playCount);
+    
+    if (gamesWithCounts.every(g => g.playCount === 0)) {
+        return gamesData.slice(0, TOP_PLAYED_COUNT);
+    }
+    
+    return gamesWithCounts.slice(0, TOP_PLAYED_COUNT);
+}
 
 function isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
@@ -56,6 +100,8 @@ function saveRecentlyPlayed(games) {
 }
 
 function trackGame(id, name, image) {
+    incrementPlayCount(id);
+    
     const recentGames = getRecentlyPlayed();
     const existingIndex = recentGames.findIndex(g => g.id === id);
     
@@ -93,6 +139,36 @@ function renderRecentlyPlayed() {
     `).join('');
 }
 
+function formatPlayCount(count) {
+    if (count >= 1000) {
+        return (count / 1000).toFixed(1) + 'k';
+    }
+    return count.toString();
+}
+
+function renderTopPlayed() {
+    const container = document.getElementById('top-played-grid');
+    const topGames = getTopPlayedGames();
+    const counts = getPlayCounts();
+    
+    container.innerHTML = topGames.map((game, index) => {
+        const playCount = counts[game.id] || 0;
+        const rankClass = index === 0 ? 'rank-gold' : index === 1 ? 'rank-silver' : index === 2 ? 'rank-bronze' : '';
+        
+        return `
+            <a href="games/${game.id}/" class="game-card top-card" onclick="trackGame('${game.id}', '${game.name.replace(/'/g, "\\'")}', '${game.image}')" data-rank="${index + 1}">
+                <div class="rank-badge ${rankClass}">#${index + 1}</div>
+                <img src="${game.image}" alt="${game.name}" onerror="this.style.display='none'">
+                <div class="play-button"><i class="fa-solid fa-play"></i></div>
+                <div class="game-info">
+                    <span class="game-title">${game.name}</span>
+                    <span class="play-count"><i class="fas fa-gamepad"></i> ${formatPlayCount(playCount)} plays</span>
+                </div>
+            </a>
+        `;
+    }).join('');
+}
+
 function createGameCard(game) {
     const tagsHTML = game.tags ? game.tags.map(tag => 
         `<span class="game-tag">${tag}</span>`
@@ -112,14 +188,14 @@ function createGameCard(game) {
 }
 
 function renderGames() {
-    const container = document.getElementById('games');
+    const container = document.getElementById('games-grid');
     container.innerHTML = gamesData.map(createGameCard).join('');
 }
 
 function searchGames() {
     const searchInput = document.getElementById('searchInput');
     const searchTerm = searchInput.value.toLowerCase().trim();
-    const gameCards = document.querySelectorAll('#games .game-card');
+    const gameCards = document.querySelectorAll('#games-grid .game-card');
     const noResults = document.getElementById('noResults');
     let visibleCount = 0;
     
@@ -163,6 +239,7 @@ function initMobileMenu() {
 
 function init() {
     renderGames();
+    renderTopPlayed();
     renderRecentlyPlayed();
     initMobileMenu();
     
