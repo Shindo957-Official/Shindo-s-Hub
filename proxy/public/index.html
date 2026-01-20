@@ -129,6 +129,39 @@
         const address = document.getElementById('uv-address');
         const searchEngine = document.getElementById('uv-search-engine');
 
+        async function registerSW() {
+            if (!('serviceWorker' in navigator)) {
+                throw new Error('Service workers not supported');
+            }
+            
+            try {
+                const reg = await navigator.serviceWorker.register('/frog/sw.js', {
+                    scope: __uv$config.prefix
+                });
+                
+                await new Promise((resolve, reject) => {
+                    const sw = reg.installing || reg.waiting || reg.active;
+                    if (reg.active) {
+                        resolve();
+                        return;
+                    }
+                    if (!sw) {
+                        reject(new Error('No service worker found'));
+                        return;
+                    }
+                    sw.addEventListener('statechange', (e) => {
+                        if (e.target.state === 'activated') resolve();
+                        if (e.target.state === 'redundant') reject(new Error('SW became redundant'));
+                    });
+                    setTimeout(() => resolve(), 2000);
+                });
+                
+                return reg;
+            } catch (err) {
+                throw new Error('SW registration failed: ' + err.message);
+            }
+        }
+
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             
@@ -146,26 +179,12 @@
                 const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
                 window.location.href = encodedUrl;
             } catch (err) {
-                console.error('Proxy error:', err);
-                alert('Failed to load proxy. Please try again.');
+                console.error('Proxy error:', err.message || err);
+                alert('Proxy error: ' + (err.message || 'Unknown error. Please try again.'));
             }
         });
 
-        async function registerSW() {
-            if ('serviceWorker' in navigator) {
-                const registration = await navigator.serviceWorker.register('/frog/fr.sw.js', {
-                    scope: __uv$config.prefix
-                });
-                
-                if (registration.installing) {
-                    await new Promise(resolve => {
-                        registration.installing.addEventListener('statechange', (e) => {
-                            if (e.target.state === 'activated') resolve();
-                        });
-                    });
-                }
-            }
-        }
+        registerSW().catch(() => {});
     </script>
 </body>
 </html>
