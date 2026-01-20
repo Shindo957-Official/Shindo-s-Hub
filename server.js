@@ -3,10 +3,25 @@ import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createBareServer } from '@tomphttp/bare-server-node';
+import http from 'node:http';
+import https from 'node:https';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const bare = createBareServer('/bare/');
+// Configure HTTP agents with lower connection limits
+http.globalAgent.maxSockets = 5;
+http.globalAgent.keepAlive = false;
+https.globalAgent.maxSockets = 5;
+https.globalAgent.keepAlive = false;
+
+const bare = createBareServer('/bare/', {
+    maintainer: {
+        email: 'support@shindoshub.org',
+        website: 'https://shindoshub.org'
+    },
+    logErrors: false
+});
 const app = express();
 const PORT = 5000;
 
@@ -103,6 +118,11 @@ server.on('upgrade', (req, socket, head) => {
         socket.end();
     }
 });
+
+// Set connection timeouts to avoid connection limit issues
+server.keepAliveTimeout = 5000;
+server.headersTimeout = 10000;
+server.timeout = 30000;
 
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Shindo's Hub running on http://0.0.0.0:${PORT}`);
