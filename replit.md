@@ -70,6 +70,16 @@ When users switch to the Experimental channel in Settings, they unlock:
 - **macOS Theme**: Additional UI theme option (1.0 Exp) with macOS-style aesthetic
 
 ## Recent Changes
+- January 20, 2026: Added Ultraviolet Proxy
+  - Integrated CustomFrogie proxy (based on Ultraviolet)
+  - Proxy accessible from navigation bar or /proxy route
+  - Clean custom UI matching Shindo's Hub design
+  - Bare server integration for proxying web requests
+
+- January 17, 2026: Added Tic Tac Toe game
+  - New game from GitHub CDN repository
+  - Game count now 25+
+
 - January 17, 2026: Experimental channel features
   - Added channel switcher (Stable/Experimental) in settings
   - Random game button and category filter for experimental users

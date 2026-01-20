@@ -1,16 +1,29 @@
 import express from 'express';
 import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
-
+import { dirname, join } from 'node:path';
+import { createBareServer } from '@tomphttp/bare-server-node';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const bare = createBareServer('/bare/');
 const app = express();
 const PORT = 5000;
 
 app.use(express.json());
-app.use(express.static(__dirname));
+
+app.use('/frog/', express.static(join(__dirname, 'proxy/public/frog')));
+
+app.use('/proxy', express.static(join(__dirname, 'proxy/public')));
+
+app.get('/proxy', (req, res) => {
+    res.sendFile(join(__dirname, 'proxy/public/index.html'));
+});
+
+app.use(express.static(__dirname, {
+    index: 'index.html',
+    extensions: ['html']
+}));
 
 const feedbackRateLimit = new Map();
 
@@ -73,7 +86,23 @@ app.post('/api/feedback', async (req, res) => {
     }
 });
 
-const server = createServer(app);
+const server = createServer();
+
+server.on('request', (req, res) => {
+    if (bare.shouldRoute(req)) {
+        bare.routeRequest(req, res);
+    } else {
+        app(req, res);
+    }
+});
+
+server.on('upgrade', (req, socket, head) => {
+    if (bare.shouldRoute(req)) {
+        bare.routeUpgrade(req, socket, head);
+    } else {
+        socket.end();
+    }
+});
 
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Shindo's Hub running on http://0.0.0.0:${PORT}`);
